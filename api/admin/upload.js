@@ -20,7 +20,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const body = await readRawBody(req, isVideo ? MAX_VIDEO : MAX_IMAGE);
+    // Beberapa runtime sudah men-buffer body; dukung stream ATAU body siap-pakai
+    let body;
+    if (req.body && Buffer.isBuffer(req.body)) {
+      body = req.body;
+    } else if (req.body && req.body.type === 'Buffer' && Array.isArray(req.body.data)) {
+      body = Buffer.from(req.body.data);
+    } else {
+      body = await readRawBody(req, isVideo ? MAX_VIDEO : MAX_IMAGE);
+    }
     if (!body.length) return res.status(400).json({ success: false, error: 'File kosong' });
 
     const rawName = String(req.headers['x-filename'] || `file${isVideo ? '.mp4' : '.jpg'}`)
@@ -36,6 +44,7 @@ export default async function handler(req, res) {
       return res.status(413).json({ success: false, error: `Ukuran maks ${isVideo ? '40MB (video)' : '8MB (gambar)'}` });
     }
     console.error('admin/upload failed:', err);
-    return res.status(500).json({ success: false, error: 'Upload gagal' });
+    // DIAGNOSTIK: tampilkan pesan asli supaya mudah lacak (proyek personal)
+    return res.status(500).json({ success: false, error: 'Upload gagal', detail: String(err && (err.message || err)) });
   }
 }
