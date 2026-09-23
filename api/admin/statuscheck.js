@@ -8,7 +8,19 @@ export default async function handler(req, res) {
   const out = {
     hasToken: !!process.env.BLOB_READ_WRITE_TOKEN,
     hasAdminToken: !!process.env.ADMIN_TOKEN,
+    build: (process.env.VERCEL_GIT_COMMIT_SHA || 'n/a').slice(0, 7),
     steps: {},
+  };
+
+  // Diagnostik format token (AMAN: tidak membocorkan rahasia, hanya prefiks/panjang/casing)
+  const t = process.env.BLOB_READ_WRITE_TOKEN || '';
+  out.tokenInfo = {
+    length: t.length,
+    startsWithCorrectPrefix: t.startsWith('vercel_blob_rw_'),
+    hasQuotes: /"|'/.test(t),
+    hasWhitespace: t !== t.trim() || /\s/.test(t),
+    prefixAndStore: t.slice(0, 31), // 'vercel_blob_rw_' + ID store (16)
+    lastChar: JSON.stringify(t.slice(-1)),
   };
 
   const probePath = 'pakein/_probe.txt';
