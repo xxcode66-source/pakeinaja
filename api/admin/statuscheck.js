@@ -1,10 +1,11 @@
-// GET /api/admin/_status — diagnostik koneksi Blob (butuh ADMIN_TOKEN)
+// GET /api/admin/statuscheck — diagnostik koneksi Blob (butuh ADMIN_TOKEN)
 // Cek: env token ada? tulis-baca-hapus blob probe berhasil?
 import { put, list, del } from '@vercel/blob';
+import { requireAdmin } from '../../lib/store.js';
 
 export default async function handler(req, res) {
-  // DIAGNOSTIK sementara: boleh dibuka tanpa login (hanya menampilkan boolean & pesan error, TIDAK menampilkan token).
-  // Setelah beres, endpoint ini sebaiknya dihapus/dikunci lagi dengan requireAdmin.
+  if (!requireAdmin(req, res)) return;
+
   const out = {
     hasToken: !!process.env.BLOB_READ_WRITE_TOKEN,
     hasAdminToken: !!process.env.ADMIN_TOKEN,
