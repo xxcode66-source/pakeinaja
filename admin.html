@@ -88,9 +88,15 @@
             <input id="fName" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Misal: Cardigan Rajut Peach">
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="text-xs text-gray-500">Harga (Rp) *</label>
-              <input id="fPrice" type="number" min="0" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="35000">
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <label class="text-xs text-gray-500">Harga (Rp) *</label>
+                <input id="fPrice" type="number" min="0" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="35000">
+              </div>
+              <div class="flex-1">
+                <label class="text-xs text-gray-500">Harga coret (opsional)</label>
+                <input id="fPriceOld" type="number" min="0" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="60000">
+              </div>
             </div>
             <div>
               <label class="text-xs text-gray-500">Badge</label>
@@ -236,7 +242,7 @@
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-sm text-gray-800 truncate">${p.name}</p>
               <p class="text-xs text-gray-400">${p.material || '-'} ${p.badge ? '· <span class="text-pinkDark font-medium">' + p.badge + '</span>' : ''}</p>
-              <p class="text-sm font-bold text-pinkDark">${rupiah(p.price)}</p>
+              <p class="text-sm font-bold text-pinkDark">${rupiah(p.price)}${p.priceOld > p.price ? ' <span class="text-[10px] font-medium text-gray-400 line-through">' + rupiah(p.priceOld) + '</span>' : ''}</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
               <button onclick="markSold(${p.id})" class="text-xs bg-green-500 hover:bg-green-600 text-white font-semibold px-3 py-1.5 rounded-lg"><i class="fa-solid fa-check"></i> Terjual</button>
@@ -257,18 +263,40 @@
         `).join('');
     }
 
-    // ---------- Upload gambar ----------
+    // ---------- Upload gambar (kompres otomatis di browser) ----------
+    // Resize maks 1200px + JPEG ~82% → loading cepat & kuota Blob awet.
+    // GIF & file yang sudah kecil dilewatkan apa adanya.
+    async function compressImage(file, maxDim = 1200, quality = 0.82) {
+      if (!file.type.startsWith('image/') || file.type === 'image/gif') return file;
+      try {
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+        if (scale === 1 && file.size < 1.5 * 1024 * 1024) return file;
+        const w = Math.round(bitmap.width * scale), h = Math.round(bitmap.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', quality));
+        return blob && blob.size < file.size
+          ? new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' })
+          : file;
+      } catch (e) {
+        return file; //kalau gagal proses, upload original aja
+      }
+    }
+
     async function uploadFiles(fileList) {
       const status = $('uploadStatus');
       for (const file of fileList) {
         if (pendingImages.length >= 8) { toast('Maks 8 foto', false); break; }
         status.classList.remove('hidden');
-        status.textContent = `Mengupload ${file.name}...`;
+        status.textContent = `Mengoptimalkan & upload ${file.name}...`;
+        const payload = await compressImage(file);
         try {
           const res = await fetch(`${API}/admin/upload`, {
             method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'x-filename': file.name, 'Content-Type': file.type || 'application/octet-stream' },
-            body: file,
+            headers: { 'Authorization': 'Bearer ' + token, 'x-filename': payload.name, 'Content-Type': payload.type || 'application/octet-stream' },
+            body: payload,
           });
           const result = await res.json();
           if (result.success) {
@@ -308,6 +336,7 @@
 
       const payload = {
         name, price,
+        priceOld: Number($('fPriceOld').value) || null,
         material: $('fMaterial').value.trim(),
         description: $('fDesc').value.trim(),
         badge: $('fBadge').value,
@@ -338,6 +367,7 @@
       $('editId').value = p.id;
       $('fName').value = p.name || '';
       $('fPrice').value = p.price || '';
+      $('fPriceOld').value = p.priceOld || '';
       $('fMaterial').value = p.material || '';
       $('fDesc').value = p.description || '';
       $('fBadge').value = p.badge || '';
@@ -350,7 +380,7 @@
 
     function resetForm() {
       $('editId').value = '';
-      ['fName', 'fPrice', 'fMaterial', 'fDesc', 'fVideo'].forEach(id => $(id).value = '');
+      ['fName', 'fPrice', 'fPriceOld', 'fMaterial', 'fDesc', 'fVideo'].forEach(id => $(id).value = '');
       $('fBadge').value = '';
       $('fImages').value = '';
       pendingImages = [];

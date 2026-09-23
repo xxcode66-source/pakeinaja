@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PAKEINAJA - Cardigan Cute & Soft</title>
+  <meta name="description" content="Toko cardigan cute & soft, harga bersahabat. Barang limited 1 pcs — lihat foto, chat WhatsApp, langsung jadi.">
+  <link rel="icon" type="image/jpeg" href="pakein.jpg">
+  <!-- Open Graph: preview rapi saat link dishare ke WA/TikTok/IG -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PAKEINAJA">
+  <meta property="og:title" content="PAKEINAJA — Cardigan Cute & Soft">
+  <meta property="og:description" content="Cardigan limited 1 pcs, harga bersahabat. Cocok langsung via WhatsApp 🌸">
+  <meta property="og:url" content="https://pakeinaja-beta.vercel.app/">
+  <meta property="og:image" content="https://pakeinaja-beta.vercel.app/pakein.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -112,6 +122,16 @@
         <p class="text-gray-500 font-semibold">Produk tidak ditemukan</p>
         <p class="text-xs text-gray-400 mt-1">Coba kata kunci lain ya Kak ✨</p>
       </div>
+    </section>
+
+    <!-- Galeri Sudah Terjual (social proof) -->
+    <section id="soldSection" class="hidden mt-10">
+      <h3 class="text-lg font-bold text-gray-700 flex items-center gap-2 mb-3">
+        <span>Sudah Terjual</span> 🎀
+        <span id="soldBadgeCount" class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full"></span>
+      </h3>
+      <div id="soldGrid" class="flex gap-2 flex-wrap"></div>
+      <p class="text-[11px] text-gray-400 mt-3">Setiap cardigan cuma ada 1 — yang sudah terjual tidak di-restock, jadi buruan yang masih tersedia ya Kak 🌷</p>
     </section>
   </main>
 
@@ -298,7 +318,7 @@
             <h4 class="font-semibold text-sm text-gray-800 line-clamp-1">${p.name}</h4>
             <p class="text-xs text-gray-400 mb-1">${p.material}</p>
             <div class="flex items-center justify-between mt-2">
-              <span class="font-bold text-pinkDark text-sm">${formatPrice(p.price)}</span>
+              <span class="font-bold text-pinkDark text-sm">${formatPrice(p.price)}${p.priceOld > p.price ? `<span class="text-[10px] font-medium text-gray-400 line-through ml-1">${formatPrice(p.priceOld)}</span>` : ''}</span>
               <span class="text-[11px] text-amber-500 font-medium"><i class="fa-solid fa-star"></i> ${p.rating}</span>
             </div>
           </div>
@@ -387,7 +407,7 @@
 
       // Set text info
       modalTitle.innerText = p.name;
-      modalPrice.innerText = formatPrice(p.price);
+      modalPrice.innerHTML = formatPrice(p.price) + (p.priceOld > p.price ? ` <span class="text-sm font-medium text-gray-400 line-through align-middle">${formatPrice(p.priceOld)}</span>` : '');
       modalDesc.innerText = p.description;
 
       // Build media list (images + video)
@@ -564,7 +584,25 @@
     // Load produk saat halaman dimuat
     document.addEventListener('DOMContentLoaded', () => {
       loadProducts();
+      loadSoldGallery();
     });
+
+    // Galeri "Sudah Terjual" dari riwayat (tanpa gambar, hemat)
+    async function loadSoldGallery() {
+      try {
+        const res = await fetch(`${API_BASE}/sold`);
+        const result = await res.json();
+        if (!result.success || !result.items.length) return;
+        document.getElementById('soldBadgeCount').innerText = result.total + ' pcs';
+        document.getElementById('soldGrid').innerHTML = result.items.map(h => `
+          <div class="bg-white border border-pinkSoft rounded-2xl px-3 py-2 shadow-sm">
+            <p class="text-xs font-semibold text-gray-600 line-through decoration-pinkCute/70 decoration-2 truncate max-w-[160px]">${h.name}</p>
+            <p class="text-[10px] text-gray-400">${new Date(h.soldAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} · <span class="text-green-600 font-medium">${formatPrice(h.price)}</span></p>
+          </div>
+        `).join('');
+        document.getElementById('soldSection').classList.remove('hidden');
+      } catch (e) {}
+    }
   </script>
 </body>
 </html>
