@@ -1,0 +1,9 @@
+{
+  // Disable default CSS validation so PostCSS/Tailwind directives like @tailwind and @apply don't show as errors
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+
+  // Recommend Tailwind CSS IntelliSense for better editor support (user can install it)
+  "extensions.ignoreRecommendations": false
+}

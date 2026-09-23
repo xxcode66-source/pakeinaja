@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakein Cardigan - Cardigan Specialist Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Minimal fallback UI styles to keep layout usable if Tailwind fails */
+        :root{--pink:#ec4899;--rose50:#fff1f2;--card-bg:#fff}
+        html,body{height:100%;margin:0;padding:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--rose50);color:#111}
+        .max-w-7xl{max-width:1100px;margin-left:auto;margin-right:auto}
+        header{background:#fff;border-bottom:1px solid #fdecef}
+        header .h-16{height:64px}
+        .nav-link{color:#374151;text-decoration:none;margin-right:1rem;display:inline-block}
+        .nav-link.active{color:var(--pink);font-weight:600}
+        .btn-primary{background:linear-gradient(135deg,var(--pink),#f472b6);color:#fff;border-radius:12px;padding:10px 14px;border:none;cursor:pointer}
+        .input{padding:8px;border:1px solid #e5e7eb;border-radius:10px}
+        .product-card{background:var(--card-bg);border-radius:16px;overflow:hidden}
+        #products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+        .product-card img{display:block;max-width:100%;height:auto}
+        .wishlist-btn{border-radius:9999px}
+        table{width:100%;border-collapse:collapse}
+        table th, table td{padding:12px;border-bottom:1px solid #f3e8f2;text-align:left}
+        .rounded-2xl{border-radius:12px}
+        .hidden{display:none}
+    </style>
+    <style>
+        /* Minimal fallback UI styles to keep layout usable if Tailwind fails */
+        :root{--pink:#ec4899;--rose50:#fff1f2;--card-bg:#fff}
+        html,body{height:100%;margin:0;padding:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--rose50);color:#111}
+        .max-w-7xl{max-width:1100px;margin-left:auto;margin-right:auto}
+        header{background:#fff;border-bottom:1px solid #fdecef}
+        header .h-16{height:64px}
+        .nav-link{color:#374151;text-decoration:none;margin-right:1rem;display:inline-block}
+        .nav-link.active{color:var(--pink);font-weight:600}
+        .btn-primary{background:linear-gradient(135deg,var(--pink),#f472b6);color:#fff;border-radius:12px;padding:10px 14px;border:none;cursor:pointer}
+        .input{padding:8px;border:1px solid #e5e7eb;border-radius:10px}
+        .product-card{background:var(--card-bg);border-radius:16px;overflow:hidden}
+        #products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+        .product-card img{display:block;max-width:100%;height:auto}
+        .wishlist-btn{border-radius:9999px}
+        table{width:100%;border-collapse:collapse}
+        table th, table td{padding:12px;border-bottom:1px solid #f3e8f2;text-align:left}
+        .rounded-2xl{border-radius:12px}
+        .hidden{display:none}
+
+        /* Additional styles merged from stray block */
+        body { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        .modal-backdrop { backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); }
+        .product-card { transition: all 0.3s ease; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(244,114,182,0.15); }
+        .nav-link { position: relative; transition: color 0.3s ease; }
+        .nav-link:hover { color: #ec4899; }
+        .nav-link.active::after { content: ''; position: absolute; bottom: -8px; left: 0; right: 0; height: 2px; background: #ec4899; border-radius:1px; }
+        .btn-primary { background: linear-gradient(135deg, #ec4899, #f472b6); transition: all 0.3s ease; }
+        .btn-primary:hover { background: linear-gradient(135deg, #db2777, #ec4899); transform: translateY(-1px); box-shadow: 0 8px 25px rgba(236,72,153,0.3); }
+        .section-title { position: relative; display: inline-block; }
+        .section-title::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 60px; height: 3px; background: linear-gradient(90deg,#ec4899,#f472b6); border-radius:2px; }
+        .size-option { transition: all 0.3s ease; cursor: pointer; }
+        .size-option:hover { transform: scale(1.05); }
+        .size-option.selected { background:#ec4899; color:white; transform: scale(1.05); }
+        .size-option.unavailable { opacity:0.5; cursor:not-allowed; }
+        .wishlist-btn { transition: all 0.3s ease; }
+        .wishlist-btn.active { color:#dc2626; transform: scale(1.1); }
+        .quiz-option { transition: all 0.3s ease; cursor:pointer; }
+        .quiz-option:hover { background:#fdf2f8; border-color:#ec4899; }
+        .quiz-option.selected { background:#ec4899; color:white; border-color:#ec4899; }
+        .thickness-indicator { height:4px; border-radius:2px; background:#e5e7eb; position:relative; overflow:hidden; }
+        .thickness-indicator.thin::after { content:''; position:absolute; left:0; top:0; height:100%; width:33%; background:#10b981; }
+        .thickness-indicator.medium::after { content:''; position:absolute; left:0; top:0; height:100%; width:66%; background:#f59e0b; }
+        .thickness-indicator.thick::after { content:''; position:absolute; left:0; top:0; height:100%; width:100%; background:#ef4444; }
+    </style>
+</head>
+<body class="bg-rose-50 min-h-full">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-pink-600">Pakein</h1>
+                        <p class="text-xs text-gray-500 -mt-1">Cardigan Store</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="nav-link active text-gray-700 font-medium nav-action" data-section="products">All Cardigans</a>
+                    <a href="#" class="nav-link text-gray-700 font-medium nav-action" data-section="size-guide">Size Guide</a>
+                    <a href="#" class="nav-link text-gray-700 font-medium nav-action" data-section="style-finder">Style Finder</a>
+                    <a href="#" class="nav-link text-gray-700 font-medium nav-action" data-section="care-guide">Care Guide</a>
+                    <a href="#" class="nav-link text-gray-700 font-medium nav-action" data-section="wishlist">Wishlist (<span id="wishlist-count">0</span>)</a>
+                </nav>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-pink-600 transition-colors">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="md:hidden hidden pb-4">
+                <div class="flex flex-col space-y-3">
+                    <a href="#" class="text-gray-700 font-medium hover:text-pink-600 transition-colors nav-action" data-section="products">All Cardigans</a>
+                    <a href="#" class="text-gray-700 font-medium hover:text-pink-600 transition-colors nav-action" data-section="size-guide">Size Guide</a>
+                    <a href="#" class="text-gray-700 font-medium hover:text-pink-600 transition-colors nav-action" data-section="style-finder">Style Finder</a>
+                    <a href="#" class="text-gray-700 font-medium hover:text-pink-600 transition-colors nav-action" data-section="care-guide">Care Guide</a>
+                    <a href="#" class="text-gray-700 font-medium hover:text-pink-600 transition-colors nav-action" data-section="wishlist">Wishlist</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Products Section -->
+        <section id="products-section" class="section-content">
+            <!-- Hero Section -->
+            <div class="text-center mb-12">
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    </div>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Koleksi Cardigan Terlengkap</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-8">Spesialis cardigan berkualitas premium dengan desain All Size yang nyaman untuk semua bentuk tubuh. Cocok untuk berbagai acara dan gaya.</p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Style Filter -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Style</label>
+                        <select id="style-filter" onchange="applyFilters()" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="all">All Styles</option>
+                            <option value="classic">Classic</option>
+                            <option value="oversized">Oversized</option>
+                            <option value="cropped">Cropped</option>
+                            <option value="long">Long</option>
+                            <option value="lightweight">Lightweight</option>
+                            <option value="button-up">Button-Up</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Price Filter -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Price Range</label>
+                        <select id="price-filter" onchange="applyFilters()" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="all">All Prices</option>
+                            <option value="0-150000">Under Rp 150K</option>
+                            <option value="150000-200000">Rp 150K - 200K</option>
+                            <option value="200000-250000">Rp 200K - 250K</option>
+                            <option value="250000-999999">Above Rp 250K</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Occasion Filter -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Occasion</label>
+                        <select id="occasion-filter" onchange="applyFilters()" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="all">All Occasions</option>
+                            <option value="casual">Casual</option>
+                            <option value="work">Work/Office</option>
+                            <option value="formal">Formal</option>
+                            <option value="weekend">Weekend</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Thickness Filter -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Thickness</label>
+                        <select id="thickness-filter" onchange="applyFilters()" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="all">All Thickness</option>
+                            <option value="thin">Thin (Summer)</option>
+                            <option value="medium">Medium</option>
+                            <option value="thick">Thick (Winter)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button id="refresh-products-btn" onclick="refreshProductsNow()" class="px-3 py-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50">Refresh products</button>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid">
+                <!-- Products will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Size Guide Section -->
+        <section id="size-guide-section" class="section-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Size Guide</h2>
+                <p class="text-gray-600">Find your perfect fit with our detailed size guide</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Size Calculator -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Size Calculator</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Bust Measurement (cm)</label>
+                            <input type="number" id="bust-input" placeholder="e.g. 90" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Preferred Fit</label>
+                            <select id="fit-preference" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                <option value="fitted">Fitted</option>
+                                <option value="relaxed">Relaxed</option>
+                                <option value="oversized">Oversized</option>
+                            </select>
+                        </div>
+                        <button data-action="calculate-size" class="w-full btn-primary text-white py-3 px-4 rounded-xl font-semibold">
+                            Calculate My Size
+                        </button>
+                        <div id="size-result" class="hidden mt-4 p-4 bg-pink-50 rounded-xl">
+                            <!-- Result will be shown here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Size Chart -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Size Chart</h3>
+                    <div class="overflow-x-auto">
+                        <div class="text-center p-8 bg-pink-50 rounded-xl">
+                            <div class="text-4xl mb-4">📏</div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-3">All Size Cardigan</h4>
+                            <div class="bg-white rounded-lg p-4 mb-4">
+                                <p class="text-lg font-semibold text-pink-600 mb-2">Lingkar Dada: 84-106 cm</p>
+                                <p class="text-gray-600 mb-1">Panjang: Bervariasi sesuai model (45-81 cm)</p>
+                                <p class="text-gray-600">Fit: Relaxed & Comfortable</p>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <p class="mb-2">✨ <strong>Fleksibel untuk berbagai ukuran tubuh</strong></p>
+                                <p>Desain oversized yang nyaman untuk lingkar dada 84-106cm</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+                        <h4 class="font-semibold text-blue-800 mb-2">💡 Measuring Tips:</h4>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• Measure around the fullest part of your bust</li>
+                            <li>• Keep the tape measure parallel to the ground</li>
+                            <li>• Don't pull the tape too tight - it should be snug but comfortable</li>
+                            <li>• Measure over your regular bra or undergarments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Style Finder Section -->
+        <section id="style-finder-section" class="section-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Find Your Perfect Cardigan Style</h2>
+                <p class="text-gray-600">Answer a few questions to get personalized cardigan recommendations</p>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <div id="quiz-container" class="bg-white rounded-2xl p-8 shadow-sm">
+                    <!-- Quiz will be populated by JavaScript -->
+                </div>
+                
+                <div id="quiz-results" class="hidden bg-white rounded-2xl p-8 shadow-sm mt-6">
+                    <!-- Results will be shown here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Care Guide Section -->
+        <section id="care-guide-section" class="section-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Cardigan Care Guide</h2>
+                <p class="text-gray-600">Keep your cardigans looking beautiful for years to come</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cotton Blend Care -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-2xl">🌿</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">Cotton Blend</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>• Machine wash cold (30°C max)</li>
+                        <li>• Use gentle cycle</li>
+                        <li>• Turn inside out before washing</li>
+                        <li>• Air dry or low heat tumble dry</li>
+                        <li>• Iron on medium heat if needed</li>
+                    </ul>
+                </div>
+
+                <!-- Wool Blend Care -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-2xl">🐑</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">Wool Blend</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>• Hand wash with wool detergent</li>
+                        <li>• Use lukewarm water (max 30°C)</li>
+                        <li>• Don't wring or twist</li>
+                        <li>• Lay flat to dry away from direct sunlight</li>
+                        <li>• Store with cedar balls to prevent moths</li>
+                    </ul>
+                </div>
+
+                <!-- Cashmere Care -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-2xl">✨</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">Cashmere Blend</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>• Dry clean recommended</li>
+                        <li>• Or hand wash with cashmere shampoo</li>
+                        <li>• Never hang - always lay flat</li>
+                        <li>• Use cashmere comb for pilling</li>
+                        <li>• Store folded with lavender sachets</li>
+                    </ul>
+                </div>
+
+                <!-- General Tips -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm md:col-span-2 lg:col-span-3">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">💡 General Care Tips</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Storage</h4>
+                            <ul class="space-y-1 text-sm text-gray-600">
+                                <li>• Always fold, never hang cardigans</li>
+                                <li>• Use breathable garment bags</li>
+                                <li>• Keep in cool, dry place</li>
+                                <li>• Avoid plastic bags for long-term storage</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Maintenance</h4>
+                            <ul class="space-y-1 text-sm text-gray-600">
+                                <li>• Remove pilling with fabric shaver</li>
+                                <li>• Rotate wearing to prevent over-use</li>
+                                <li>• Air out between wears</li>
+                                <li>• Address stains immediately</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wishlist Section -->
+        <section id="wishlist-section" class="section-content hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Your Wishlist</h2>
+                <p class="text-gray-600">Cardigans you've saved for later</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="wishlist-grid">
+                <div class="col-span-full text-center py-16">
+                    <div class="text-6xl mb-4">💝</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Your wishlist is empty</h3>
+                    <p class="text-gray-600 mb-6">Start adding cardigans you love to see them here</p>
+                    <button onclick="showSection('products')" class="btn-primary text-white py-3 px-6 rounded-xl font-semibold">
+                        Browse Cardigans
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1">
+        <div class="modal-backdrop absolute inset-0" onclick="closeModal()"></div>
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <div id="modal-content" class="p-6">
+                    <!-- Modal content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Image Modal -->
+    <div id="image-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black bg-opacity-90" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1">
+        <button onclick="closeImagePreview()" class="absolute top-4 right-4 text-white text-4xl font-light hover:text-gray-300">&times;</button>
+        <img id="modal-preview-image" src="" alt="" class="max-w-[90vw] max-h-[90vh] object-contain">
+        <div id="image-modal-navigation" class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between items-center px-4">
+            <button onclick="prevImage()" class="p-2 rounded-full bg-white bg-opacity-10 hover:bg-opacity-20 text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <button onclick="nextImage()" class="p-2 rounded-full bg-white bg-opacity-10 hover:bg-opacity-20 text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-rose-100 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <h4 class="text-xl font-bold text-pink-600 mb-4">Pakein Cardigan</h4>
+                <p class="text-gray-600 mb-6">Spesialis Cardigan All Size - Nyaman untuk Semua</p>
+                
+                <div class="flex justify-center space-x-6">
+                    <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition-colors">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                        </svg>
+                        <span>WhatsApp</span>
+                    </a>
+                    
+                    <a href="https://instagram.com/pakein" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-gray-600 hover:text-pink-600 transition-colors">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987c6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.611-3.132-1.551c-.684-.94-.684-2.102 0-3.042c.684-.94 1.835-1.551 3.132-1.551s2.448.611 3.132 1.551c.684.94.684 2.102 0 3.042c-.684.94-1.835 1.551-3.132 1.551zm7.718 0c-1.297 0-2.448-.611-3.132-1.551c-.684-.94-.684-2.102 0-3.042c.684-.94 1.835-1.551 3.132-1.551s2.448.611 3.132 1.551c.684.94.684 2.102 0 3.042c-.684.94-1.835 1.551-3.132 1.551z"/>
+                        </svg>
+                        <span>@pakein</span>
+                    </a>
+                </div>
+                
+                <div class="mt-8 pt-8 border-t border-rose-100">
+                    <p class="text-sm text-gray-500">© 2024 Pakein Cardigan. Made with 💕 for cardigan lovers.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Cardigan product data with sizes and detailed info
+        // NOTE: products will be loaded from backend `/api/products` when available.
+        // The following `embeddedProducts` is used as a fallback when the API is unreachable.
+        const embeddedProducts = [
+            {
+                id: 1,
+                name: "Classic Knit Cardigan",
+                price: 185000,
+                priceFormatted: "Rp 185,000",
+                category: "cardigan",
+                style: "classic",
+                material: "Cotton Blend",
+                thickness: "medium",
+                occasion: ["casual", "work"],
+                bodyType: ["all"],
+                sizes: [
+                    { size: "All Size", bust: "88-104", length: "58-64", available: true, stock: 15, note: "Fit untuk lingkar dada 88-104cm" }
+                ],
+                photos: [
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M80 100 L220 100 L210 120 L200 300 L180 320 L120 320 L100 300 L90 120 Z' fill='%23f9a8d4' opacity='0.8'/%3E%3Cpath d='M80 100 L100 90 L200 90 L220 100 L200 110 L100 110 Z' fill='%23ec4899' opacity='0.6'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3EClassic Style%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Depan"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M80 100 L220 100 L210 120 L200 300 L180 320 L120 320 L100 300 L90 120 Z' fill='%23fbcfe8' opacity='0.8'/%3E%3Cpath d='M120 150 L180 150 L175 160 L125 160 Z' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ETampak Belakang%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Belakang"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M70 110 L230 110 L220 130 L210 290 L190 310 L110 310 L90 290 L80 130 Z' fill='%23f472b6' opacity='0.6'/%3E%3Crect x='120' y='160' width='60' height='80' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3EDetail Kancing%3C/text%3E%3C/svg%3E",
+                        label: "Detail Kancing"
+                    }
+                ],
+                description: "Cardigan klasik dengan desain timeless yang cocok untuk berbagai acara. Terbuat dari cotton blend yang nyaman dan breathable.",
+                careInstructions: "Hand wash dengan air dingin, jangan diperas, keringkan dengan cara digantung",
+                shopeeUrl: "https://shopee.co.id/product/123456",
+                featured: true,
+                trending: false,
+                stylingTips: [
+                    "Padukan dengan dress untuk look feminin",
+                    "Layer dengan basic tee untuk casual chic",
+                    "Cocok untuk outfit kerja dengan blouse"
+                ]
+            },
+            {
+                id: 2,
+                name: "Oversized Cozy Cardigan",
+                price: 225000,
+                priceFormatted: "Rp 225,000",
+                category: "cardigan",
+                style: "oversized",
+                material: "Wool Blend",
+                thickness: "thick",
+                occasion: ["casual", "weekend"],
+                bodyType: ["petite", "curvy", "tall"],
+                sizes: [
+                    { size: "All Size", bust: "88-106", length: "65-71", available: true, stock: 12, note: "Oversized fit untuk lingkar dada 88-106cm" }
+                ],
+                photos: [
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M60 100 L240 100 L230 120 L220 320 L200 340 L100 340 L80 320 L70 120 Z' fill='%23f9a8d4' opacity='0.8'/%3E%3Cpath d='M60 100 L80 85 L220 85 L240 100 L220 115 L80 115 Z' fill='%23ec4899' opacity='0.6'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='370' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3EOversized Fit%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Depan"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M60 100 L240 100 L230 120 L220 320 L200 340 L100 340 L80 320 L70 120 Z' fill='%23fbcfe8' opacity='0.8'/%3E%3Cpath d='M100 170 L200 170 L195 180 L105 180 Z' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='370' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ETampak Belakang%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Belakang"
+                    }
+                ],
+                description: "Cardigan oversized yang super cozy dan hangat. Perfect untuk cuaca dingin atau saat ingin tampil relaxed namun tetap stylish.",
+                careInstructions: "Dry clean atau hand wash dengan deterjen khusus wool, jangan dijemur langsung di bawah sinar matahari",
+                shopeeUrl: "https://shopee.co.id/product/123457",
+                featured: true,
+                trending: true,
+                stylingTips: [
+                    "Pair dengan skinny jeans untuk balanced silhouette",
+                    "Tuck in bagian depan untuk define waist",
+                    "Perfect untuk layering di musim hujan"
+                ]
+            },
+            {
+                id: 3,
+                name: "Lightweight Summer Cardigan",
+                price: 145000,
+                priceFormatted: "Rp 145,000",
+                category: "cardigan",
+                style: "lightweight",
+                material: "Viscose",
+                thickness: "thin",
+                occasion: ["casual", "office", "travel"],
+                bodyType: ["all"],
+                sizes: [
+                    { size: "All Size", bust: "86-102", length: "55-61", available: true, stock: 20, note: "Relaxed fit untuk lingkar dada 86-102cm" }
+                ],
+                photos: [
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M90 110 L210 110 L200 130 L190 290 L170 310 L130 310 L110 290 L100 130 Z' fill='%23fbcfe8' opacity='0.8'/%3E%3Cpath d='M90 110 L110 95 L190 95 L210 110 L190 125 L110 125 Z' fill='%23f472b6' opacity='0.6'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='350' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ELightweight%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Depan"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M90 110 L210 110 L200 130 L190 290 L170 310 L130 310 L110 290 L100 130 Z' fill='%23f9a8d4' opacity='0.8'/%3E%3Cpath d='M120 160 L180 160 L175 170 L125 170 Z' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='350' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ETampak Belakang%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Belakang"
+                    }
+                ],
+                description: "Cardigan ringan yang perfect untuk AC room atau cuaca yang tidak terlalu dingin. Bahan viscose yang adem dan tidak gerah.",
+                careInstructions: "Machine wash dengan air dingin, low heat tumble dry atau air dry",
+                shopeeUrl: "https://shopee.co.id/product/123458",
+                featured: false,
+                trending: true,
+                stylingTips: [
+                    "Ideal untuk outfit kantor dengan AC",
+                    "Perfect travel companion - ringan dan tidak makan tempat",
+                    "Layer dengan tank top untuk summer look"
+                ]
+            },
+            {
+                id: 4,
+                name: "Cropped Trendy Cardigan",
+                price: 165000,
+                priceFormatted: "Rp 165,000",
+                category: "cardigan",
+                style: "cropped",
+                material: "Cotton",
+                thickness: "medium",
+                occasion: ["casual", "date", "hangout"],
+                bodyType: ["petite", "average"],
+                sizes: [
+                    { size: "All Size", bust: "84-100", length: "45-51", available: true, stock: 8, note: "Cropped fit untuk lingkar dada 84-100cm" }
+                ],
+                photos: [
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M95 120 L205 120 L195 140 L185 240 L165 260 L135 260 L115 240 L105 140 Z' fill='%23f472b6' opacity='0.8'/%3E%3Cpath d='M95 120 L115 105 L185 105 L205 120 L185 135 L115 135 Z' fill='%23ec4899' opacity='0.6'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='320' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ECropped Style%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Depan"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M95 120 L205 120 L195 140 L185 240 L165 260 L135 260 L115 240 L105 140 Z' fill='%23fbcfe8' opacity='0.8'/%3E%3Cpath d='M125 150 L175 150 L170 160 L130 160 Z' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='320' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ETampak Belakang%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Belakang"
+                    }
+                ],
+                description: "Cardigan cropped yang trendy dan youthful. Perfect untuk create high-waisted look dan cocok untuk body petite.",
+                careInstructions: "Machine wash cold, gentle cycle, reshape while damp and lay flat to dry",
+                shopeeUrl: "https://shopee.co.id/product/123459",
+                featured: false,
+                trending: true,
+                stylingTips: [
+                    "Pair dengan high-waisted jeans atau skirt",
+                    "Perfect untuk petite body type",
+                    "Create layered look dengan crop top"
+                ]
+            },
+            {
+                id: 5,
+                name: "Long Elegant Cardigan",
+                price: 285000,
+                priceFormatted: "Rp 285,000",
+                category: "cardigan",
+                style: "long",
+                material: "Cashmere Blend",
+                thickness: "medium",
+                occasion: ["formal", "work", "special"],
+                bodyType: ["tall", "average"],
+                sizes: [
+                    { size: "All Size", bust: "88-104", length: "75-81", available: true, stock: 6, note: "Long elegant fit untuk lingkar dada 88-104cm" }
+                ],
+                photos: [
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M85 100 L215 100 L205 120 L195 350 L175 370 L125 370 L105 350 L95 120 Z' fill='%23f9a8d4' opacity='0.8'/%3E%3Cpath d='M85 100 L105 85 L195 85 L215 100 L195 115 L105 115 Z' fill='%23ec4899' opacity='0.6'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='390' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ELong Elegant%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Depan"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M85 100 L215 100 L205 120 L195 350 L175 370 L125 370 L105 350 L95 120 Z' fill='%23fbcfe8' opacity='0.8'/%3E%3Cpath d='M115 170 L185 170 L180 180 L120 180 Z' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='390' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ETampak Belakang%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Belakang"
+                    }
+                ],
+                description: "Cardigan panjang yang elegant dan sophisticated. Terbuat dari cashmere blend yang premium dan luxurious feel.",
+                careInstructions: "Dry clean recommended, atau hand wash dengan deterjen khusus cashmere",
+                shopeeUrl: "https://shopee.co.id/product/123460",
+                featured: true,
+                trending: false,
+                stylingTips: [
+                    "Perfect untuk professional look",
+                    "Pair dengan midi dress untuk elegant outfit",
+                    "Great for tall body type - creates beautiful lines"
+                ]
+            },
+            {
+                id: 6,
+                name: "Button-Up Classic Cardigan",
+                price: 195000,
+                priceFormatted: "Rp 195,000",
+                category: "cardigan",
+                style: "button-up",
+                material: "Cotton Blend",
+                thickness: "medium",
+                occasion: ["work", "casual", "versatile"],
+                bodyType: ["all"],
+                sizes: [
+                    { size: "All Size", bust: "87-103", length: "60-66", available: true, stock: 25, note: "Versatile fit untuk lingkar dada 87-103cm" }
+                ],
+                photos: [
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M85 105 L215 105 L205 125 L195 310 L175 330 L125 330 L105 310 L95 125 Z' fill='%23f472b6' opacity='0.8'/%3E%3Cpath d='M85 105 L105 90 L195 90 L215 105 L195 120 L105 120 Z' fill='%23ec4899' opacity='0.6'/%3E%3Ccircle cx='130' cy='160' r='4' fill='%23ec4899'/%3E%3Ccircle cx='130' cy='180' r='4' fill='%23ec4899'/%3E%3Ccircle cx='130' cy='200' r='4' fill='%23ec4899'/%3E%3Ccircle cx='130' cy='220' r='4' fill='%23ec4899'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3EButton-Up Style%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Depan"
+                    },
+                    {
+                        url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%23fdf2f8'/%3E%3Cpath d='M85 105 L215 105 L205 125 L195 310 L175 330 L125 330 L105 310 L95 125 Z' fill='%23fbcfe8' opacity='0.8'/%3E%3Cpath d='M115 175 L185 175 L180 185 L120 185 Z' fill='%23ec4899' opacity='0.4'/%3E%3Ccircle cx='150' cy='60' r='20' fill='%23ec4899' opacity='0.6'/%3E%3Ctext x='150' y='360' text-anchor='middle' fill='%23be185d' font-family='Inter' font-size='12' font-weight='500'%3ETampak Belakang%3C/text%3E%3C/svg%3E",
+                        label: "Tampak Belakang"
+                    }
+                ],
+                description: "Cardigan klasik dengan kancing yang versatile dan timeless. Bisa dipakai sebagai outer atau sebagai top dengan dikancing penuh.",
+                careInstructions: "Machine wash cold, gentle cycle, button up before washing to maintain shape",
+                shopeeUrl: "https://shopee.co.id/product/123461",
+                featured: false,
+                trending: false,
+                stylingTips: [
+                    "Wear as a top by buttoning it up completely",
+                    "Layer over dresses for versatile styling",
+                    "Perfect for office wear - professional yet comfortable"
+                ]
+            }
+        ];
+
+    // Fallback image when product photo missing
+    const FALLBACK_IMG = 'pakein.jpg'; // Use relative path since it's in the same directory
+
+    // Global state
+        let products = []; // actual runtime products (from API or fallback)
+        let wishlist = JSON.parse(localStorage.getItem('pakein-wishlist') || '[]');
+        let currentQuizStep = 0;
+        let quizAnswers = {};
+
+        // Style Quiz Questions for Cardigan
+        const quizQuestions = [
+            {
+                question: "What's your body type?",
+                options: [
+                    { text: "Petite (under 160cm)", value: "petite", styles: ["cropped", "classic"] },
+                    { text: "Average height (160-170cm)", value: "average", styles: ["classic", "cropped", "long"] },
+                    { text: "Tall (above 170cm)", value: "tall", styles: ["long", "oversized"] },
+                    { text: "Curvy", value: "curvy", styles: ["oversized", "classic"] }
+                ]
+            },
+            {
+                question: "When do you usually wear cardigans?",
+                options: [
+                    { text: "Daily casual wear", value: "casual", styles: ["classic", "lightweight"] },
+                    { text: "Work/Office", value: "work", styles: ["classic", "button-up", "long"] },
+                    { text: "Special occasions", value: "formal", styles: ["long", "button-up"] },
+                    { text: "Weekend relaxing", value: "weekend", styles: ["oversized", "lightweight"] }
+                ]
+            },
+            {
+                question: "What's your climate like?",
+                options: [
+                    { text: "Hot & humid (need AC protection)", value: "hot", styles: ["lightweight"] },
+                    { text: "Mild temperature", value: "mild", styles: ["classic", "cropped"] },
+                    { text: "Cool & breezy", value: "cool", styles: ["classic", "button-up"] },
+                    { text: "Cold winters", value: "cold", styles: ["oversized", "long"] }
+                ]
+            }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Each page now manages its own categories independently
+
+            updateWishlistCount();
+            await loadProducts();
+            renderProducts();
+            initializeQuiz();
+        });
+
+        // Load products from backend API with fallback
+        async function loadProducts() {
+            try {
+                const resp = await fetch('/api/products');
+                if (!resp.ok) throw new Error('API error');
+                const j = await resp.json();
+                if (j && Array.isArray(j.products)) {
+                    products = j.products.map(p => ({ ...p, priceFormatted: formatPrice(p.price) }));
+                    return;
+                }
+            } catch (err) {
+                // fallback to embedded data
+                console.warn('Could not load products from API, using embeddedProducts fallback', err);
+            }
+            // Ensure embeddedProducts have priceFormatted
+            products = embeddedProducts.map(p => ({ ...p, priceFormatted: p.priceFormatted || formatPrice(p.price) }));
+        }
+
+        // Helper to format price (same as backend utils)
+        function formatPrice(num) {
+            try { return 'Rp ' + Number(num).toLocaleString('id-ID'); } catch(e){ return 'Rp ' + (num||0); }
+        }
+
+        // Image Preview Modal Functionality
+        let currentPreviewIndex = 0;
+        let previewImages = [];
+
+        function openImagePreview(imageUrl, photos) {
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('modal-preview-image');
+            const nav = document.getElementById('image-modal-navigation');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            img.src = imageUrl;
+            
+            previewImages = Array.isArray(photos) ? photos : [];
+            currentPreviewIndex = previewImages.findIndex(p => p.url === imageUrl);
+            
+            // Show/hide navigation based on number of images
+            nav.style.display = previewImages.length > 1 ? 'flex' : 'none';
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', handlePreviewKeypress);
+        }
+
+        function closeImagePreview() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.removeEventListener('keydown', handlePreviewKeypress);
+        }
+
+        // Focus trap helpers
+        let _previouslyFocused = null;
+        function trapFocus(modalEl) {
+            try {
+                _previouslyFocused = document.activeElement;
+                modalEl.setAttribute('aria-hidden', 'false');
+                const focusable = modalEl.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                (focusable || modalEl).focus();
+            } catch (e) { /* ignore */ }
+        }
+
+        function releaseFocus(modalEl) {
+            try {
+                modalEl.setAttribute('aria-hidden', 'true');
+                if (_previouslyFocused && typeof _previouslyFocused.focus === 'function') _previouslyFocused.focus();
+                _previouslyFocused = null;
+            } catch (e) { /* ignore */ }
+        }
+
+        function prevImage() {
+            if (previewImages.length <= 1) return;
+            currentPreviewIndex = (currentPreviewIndex - 1 + previewImages.length) % previewImages.length;
+            document.getElementById('modal-preview-image').src = previewImages[currentPreviewIndex].url;
+        }
+
+        function nextImage() {
+            if (previewImages.length <= 1) return;
+            currentPreviewIndex = (currentPreviewIndex + 1) % previewImages.length;
+            document.getElementById('modal-preview-image').src = previewImages[currentPreviewIndex].url;
+        }
+
+        function handlePreviewKeypress(e) {
+            if (e.key === 'Escape') closeImagePreview();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'ArrowRight') nextImage();
+        }
+
+        // Refresh helpers: manual refresh and polling
+        let _lastProductsSignature = '';
+        function productsSignature(list) {
+            try { return JSON.stringify(list.map(p => ({ id: p.id, name: p.name, price: p.price }))); } catch(e){ return ''; }
+        }
+
+        async function refreshProductsNow() {
+            document.getElementById('refresh-products-btn').textContent = 'Refreshing...';
+            document.getElementById('refresh-products-btn').disabled = true;
+            try {
+                const prevSig = _lastProductsSignature;
+                await loadProducts();
+                const sig = productsSignature(products);
+                if (sig !== prevSig) renderProducts();
+                _lastProductsSignature = sig;
+            } catch (e) {
+                console.error(e);
+            } finally {
+                document.getElementById('refresh-products-btn').textContent = 'Refresh products';
+                document.getElementById('refresh-products-btn').disabled = false;
+            }
+        }
+
+        // Start polling every 30s to check for updates
+        setInterval(async () => {
+            try {
+                const prevSig = _lastProductsSignature;
+                await loadProducts();
+                const sig = productsSignature(products);
+                if (!_lastProductsSignature) _lastProductsSignature = sig; // initialize
+                if (sig !== prevSig) {
+                    console.info('Products updated remotely, re-rendering');
+                    renderProducts();
+                    _lastProductsSignature = sig;
+                }
+            } catch (e) { /* ignore polling errors */ }
+        }, 30000);
+
+        // Section Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find and activate the correct nav link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.textContent.toLowerCase().includes(sectionName.replace('-', ' '))) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Close mobile menu
+            document.getElementById('mobile-menu').classList.add('hidden');
+
+            // Special handling for wishlist
+            if (sectionName === 'wishlist') {
+                renderWishlist();
+            }
+        }
+
+        // Product Rendering
+        function renderProducts() {
+            const container = document.getElementById('products-grid');
+            const filteredProducts = getFilteredProducts();
+            
+            if (filteredProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">No cardigans found</h3>
+                        <p class="text-gray-600">Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredProducts.map(product => createProductCard(product)).join('');
+        }
+
+        function getFilteredProducts() {
+            const styleFilter = document.getElementById('style-filter').value;
+            const priceFilter = document.getElementById('price-filter').value;
+            const occasionFilter = document.getElementById('occasion-filter').value;
+            const thicknessFilter = document.getElementById('thickness-filter').value;
+            
+            return products.filter(product => {
+                // Style filter
+                if (styleFilter !== 'all' && product.style !== styleFilter) {
+                    return false;
+                }
+                
+                // Price filter
+                if (priceFilter !== 'all') {
+                    const [min, max] = priceFilter.split('-').map(Number);
+                    if (product.price < min || product.price > max) {
+                        return false;
+                    }
+                }
+                
+                // Occasion filter
+                if (occasionFilter !== 'all' && !product.occasion.includes(occasionFilter)) {
+                    return false;
+                }
+                
+                // Thickness filter
+                if (thicknessFilter !== 'all' && product.thickness !== thicknessFilter) {
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+
+        function createProductCard(product) {
+            const isWishlisted = wishlist.includes(product.id);
+            const availableSizes = product.sizes.filter(s => s.available);
+            
+            // Get main photo URL and validate it
+            let mainPhoto = FALLBACK_IMG;
+            if (product.photos && Array.isArray(product.photos) && product.photos.length > 0 && product.photos[0].url) {
+                // If URL is relative (starts with /uploads), make it absolute
+                const url = product.photos[0].url;
+                if (url.startsWith('/uploads/')) {
+                    mainPhoto = window.location.origin + url;
+                } else {
+                    mainPhoto = url;
+                }
+            }
+            const photoCount = (product.photos && Array.isArray(product.photos)) ? product.photos.length : 0;
+            return `
+                <div class="product-card bg-white rounded-2xl shadow-sm overflow-hidden cursor-pointer relative product-card-el" data-product-id="${product.id}">
+                    <button data-action="toggle-wishlist" data-product-id="${product.id}" class="wishlist-btn absolute top-2 left-2 z-10 p-2 rounded-full bg-white shadow-sm ${isWishlisted ? 'active' : ''}">
+                        <svg class="h-5 w-5" fill="${isWishlisted ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+                    
+                    <div class="aspect-w-3 aspect-h-4 bg-rose-50 relative">
+                        <img src="${mainPhoto}" alt="${product.name} - ${product.material}" loading="lazy" decoding="async" class="w-full h-64 object-cover cursor-pointer" 
+                             onclick="event.stopPropagation(); openModal(${product.id})" tabindex="0" role="button" aria-label="View ${product.name}">
+                        <div class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                            +${photoCount} foto
+                        </div>
+                        <div class="absolute top-2 right-2 bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full font-medium">
+                            ${product.material}
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">${product.name}</h4>
+                        <p class="text-pink-600 font-bold text-lg mb-2">${product.priceFormatted}</p>
+                        
+                        <!-- Thickness Indicator -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                <span>Thickness</span>
+                                <span class="capitalize">${product.thickness}</span>
+                            </div>
+                            <div class="thickness-indicator ${product.thickness}"></div>
+                        </div>
+                        
+                        <!-- Size Info -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-600 mb-1">Size:</p>
+                                <span class="text-sm bg-pink-100 text-pink-700 px-3 py-1 rounded-full font-medium">All Size</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500 capitalize">${product.style}</p>
+                                <p class="text-xs text-green-600 font-medium">${product.sizes[0].stock} tersedia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Size Calculator
+        function calculateSize() {
+            const bustInput = document.getElementById('bust-input').value;
+            const fitPreference = document.getElementById('fit-preference').value;
+            
+            if (!bustInput) {
+                alert('Mohon masukkan ukuran lingkar dada Anda');
+                return;
+            }
+            
+            const bust = parseInt(bustInput);
+            let fitResult = '';
+            let sizeNote = '';
+            let isRecommended = true;
+            
+            // All Size fit check
+            if (bust >= 84 && bust <= 106) {
+                fitResult = 'All Size - Perfect Fit! ✨';
+                if (fitPreference === 'fitted') {
+                    sizeNote = 'Cardigan akan memberikan tampilan yang pas di badan dengan sedikit ruang gerak';
+                } else if (fitPreference === 'relaxed') {
+                    sizeNote = 'Cardigan akan terasa nyaman dan tidak ketat, perfect untuk daily wear';
+                } else { // oversized
+                    sizeNote = 'Cardigan akan memberikan look oversized yang cozy dan trendy';
+                }
+            } else if (bust < 84) {
+                fitResult = 'All Size - Akan Terlihat Oversized';
+                sizeNote = 'Cardigan akan terlihat lebih besar, cocok jika Anda suka style oversized';
+                isRecommended = false;
+            } else {
+                fitResult = 'All Size - Mungkin Agak Ketat';
+                sizeNote = 'Cardigan mungkin akan terasa sedikit ketat, tapi masih bisa dipakai dengan nyaman';
+                isRecommended = false;
+            }
+            
+            const resultDiv = document.getElementById('size-result');
+            resultDiv.innerHTML = `
+                <div class="text-center">
+                    <div class="text-3xl mb-2">${isRecommended ? '✨' : '📏'}</div>
+                    <h4 class="font-bold text-gray-800 mb-2">${fitResult}</h4>
+                    <p class="text-sm text-gray-600 mb-4">${sizeNote}</p>
+                    <div class="bg-white rounded-lg p-3 border">
+                        <p class="text-xs text-gray-500 mb-1">Ukuran Anda:</p>
+                        <p class="font-medium">Lingkar Dada: ${bust}cm | Preferensi: ${fitPreference}</p>
+                    </div>
+                    ${!isRecommended ? `
+                        <div class="mt-3 p-2 bg-yellow-50 rounded-lg">
+                            <p class="text-xs text-yellow-700">💡 Tip: Cardigan kami dirancang fleksibel untuk berbagai ukuran tubuh</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            resultDiv.classList.remove('hidden');
+        }
+
+        // Wishlist Functionality
+        function toggleWishlist(productId) {
+            const index = wishlist.indexOf(productId);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+            } else {
+                wishlist.push(productId);
+            }
+            
+            localStorage.setItem('pakein-wishlist', JSON.stringify(wishlist));
+            updateWishlistCount();
+            renderProducts(); // Re-render to update heart icons
+        }
+
+        function updateWishlistCount() {
+            document.getElementById('wishlist-count').textContent = wishlist.length;
+        }
+
+        function renderWishlist() {
+            const container = document.getElementById('wishlist-grid');
+            const wishlistProducts = products.filter(p => wishlist.includes(p.id));
+            
+            if (wishlistProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-4">💝</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Your wishlist is empty</h3>
+                        <p class="text-gray-600 mb-6">Start adding cardigans you love to see them here</p>
+                        <button data-action="show-products" class="btn-primary text-white py-3 px-6 rounded-xl font-semibold">
+                            Browse Cardigans
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = wishlistProducts.map(product => createProductCard(product)).join('');
+            }
+        }
+
+        // Style Quiz Functionality
+        function initializeQuiz() {
+            currentQuizStep = 0;
+            quizAnswers = {};
+            renderQuizStep();
+        }
+
+        function renderQuizStep() {
+            const container = document.getElementById('quiz-container');
+            
+            if (currentQuizStep >= quizQuestions.length) {
+                showQuizResults();
+                return;
+            }
+            
+            const question = quizQuestions[currentQuizStep];
+            
+            container.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="flex justify-center mb-4">
+                        ${quizQuestions.map((_, index) => `
+                            <div class="w-3 h-3 rounded-full mx-1 ${index <= currentQuizStep ? 'bg-pink-500' : 'bg-gray-200'}"></div>
+                        `).join('')}
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Question ${currentQuizStep + 1} of ${quizQuestions.length}</h3>
+                    <p class="text-gray-600">${question.question}</p>
+                </div>
+                
+                <div class="space-y-3 mb-6">
+                    ${question.options.map((option, index) => `
+                        <button data-quiz-value="${option.value}" data-quiz-styles="${JSON.stringify(option.styles).replace(/"/g, '&quot;')}" 
+                                class="quiz-option w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-pink-500 transition-colors">
+                            ${option.text}
+                        </button>
+                    `).join('')}
+                </div>
+                
+                ${currentQuizStep > 0 ? `
+                    <button onclick="previousQuizStep()" class="bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold mr-3">
+                        ← Previous
+                    </button>
+                ` : ''}
+            `;
+        }
+
+        function selectQuizAnswer(value, styles) {
+            quizAnswers[currentQuizStep] = { value, styles };
+            
+            // Visual feedback
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            try {
+                // if called from delegated handler, the clicked element may be passed via window._lastClickedQuizEl
+                if (window._lastClickedQuizEl) {
+                    window._lastClickedQuizEl.classList.add('selected');
+                    window._lastClickedQuizEl = null;
+                }
+            } catch (e) { /* ignore */ }
+            
+            setTimeout(() => {
+                nextQuizStep();
+            }, 500);
+        }
+
+        function nextQuizStep() {
+            currentQuizStep++;
+            renderQuizStep();
+        }
+
+        function previousQuizStep() {
+            if (currentQuizStep > 0) {
+                currentQuizStep--;
+                renderQuizStep();
+            }
+        }
+
+        function showQuizResults() {
+            // Analyze answers to determine style preferences
+            const styleCounts = {};
+            Object.values(quizAnswers).forEach(answer => {
+                answer.styles.forEach(style => {
+                    styleCounts[style] = (styleCounts[style] || 0) + 1;
+                });
+            });
+            
+            const topStyle = Object.keys(styleCounts).reduce((a, b) => styleCounts[a] > styleCounts[b] ? a : b);
+            const recommendedProducts = products.filter(p => p.style === topStyle).slice(0, 3);
+            
+            const styleDescriptions = {
+                classic: { title: "Classic Style", desc: "You prefer timeless, versatile pieces that work for multiple occasions." },
+                oversized: { title: "Oversized Comfort", desc: "You love cozy, relaxed fits that prioritize comfort and warmth." },
+                cropped: { title: "Trendy Cropped", desc: "You enjoy modern, youthful styles that create flattering silhouettes." },
+                long: { title: "Elegant Long", desc: "You appreciate sophisticated, elongating pieces for a polished look." },
+                lightweight: { title: "Lightweight Layers", desc: "You need versatile, breathable pieces for climate control." },
+                "button-up": { title: "Versatile Button-Up", desc: "You value functionality and multiple styling options in one piece." }
+            };
+            
+            const styleInfo = styleDescriptions[topStyle];
+            
+            document.getElementById('quiz-results').innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">🧥</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Perfect Match: ${styleInfo.title}</h3>
+                    <p class="text-gray-600">${styleInfo.desc}</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Recommended Cardigans for You</h4>
+                    <div class="grid grid-cols-1 gap-4">
+                        ${recommendedProducts.map(product => `
+                            <div class="bg-gray-50 rounded-xl p-4 flex items-center space-x-4 cursor-pointer" data-action="open-modal" data-product-id="${product.id}">
+                                <img src="${product.photos[0].url}" alt="${product.name}" loading="lazy" decoding="async" class="w-20 h-24 object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h5 class="font-semibold text-gray-800">${product.name}</h5>
+                                    <p class="text-pink-600 font-bold">${product.priceFormatted}</p>
+                                    <p class="text-sm text-gray-600">${product.material} • ${product.thickness}</p>
+                                    <div class="flex space-x-1 mt-1">
+                                        ${product.sizes.filter(s => s.available).map(size => `
+                                            <span class="text-xs bg-white text-gray-700 px-2 py-1 rounded">${size.size}</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="initializeQuiz()" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-semibold">
+                        Retake Quiz
+                    </button>
+                    <button onclick="showSection('products')" class="flex-1 btn-primary text-white py-3 px-4 rounded-xl font-semibold">
+                        Shop Now
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+        }
+
+        // Modal Functionality
+        function openModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modalContent = document.getElementById('modal-content');
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Product Images -->
+                    <div>
+                        <div class="relative mb-4">
+                       <img id="main-photo" src="${product.photos && Array.isArray(product.photos) && product.photos.length > 0 && product.photos[0].url ? product.photos[0].url : FALLBACK_IMG}" 
+                           alt="${product.name} - main photo" loading="lazy" decoding="async" class="w-full h-80 object-cover rounded-xl cursor-pointer preview-image transition-transform hover:scale-[1.02]"
+                           data-photos='${JSON.stringify(product.photos).replace(/'/g, "&#39;")}' tabindex="0" role="button" aria-label="Open image preview">
+                        </div>
+                        
+                        <!-- Photo indicators -->
+                        ${product.photos && Array.isArray(product.photos) && product.photos.length > 1 ? `
+                            <div class="flex justify-center space-x-2 mb-4">
+                                ${product.photos.map((photo, index) => `
+                                    <button data-action="change-photo" data-index="${index}" class="photo-indicator w-3 h-3 rounded-full bg-gray-300 ${index === 0 ? 'active' : ''}" aria-label="Change photo ${index}"></button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Product Details -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">${product.name}</h3>
+                        <p class="text-3xl font-bold text-pink-600 mb-4">${product.priceFormatted}</p>
+                        
+                        <!-- Product Info -->
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Material:</span>
+                                <span class="font-medium">${product.material}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Style:</span>
+                                <span class="font-medium capitalize">${product.style}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Thickness:</span>
+                                <span class="font-medium capitalize">${product.thickness}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Size Info -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-gray-800 mb-3">Ukuran:</h4>
+                            <div class="bg-pink-50 rounded-xl p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-lg font-bold text-pink-600">All Size</span>
+                                    <span class="text-sm text-green-600 font-medium">✅ ${product.sizes[0].stock} tersedia</span>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-2">
+                                    <p><strong>Lingkar Dada:</strong> ${product.sizes[0].bust} cm</p>
+                                    <p><strong>Panjang:</strong> ${product.sizes[0].length} cm</p>
+                                </div>
+                                <p class="text-xs text-gray-500">${product.sizes[0].note}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Description -->
+                        <p class="text-gray-600 mb-4 text-sm">${product.description}</p>
+                        
+                        <!-- Styling Tips -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-gray-800 mb-2">Styling Tips:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                ${product.stylingTips.map(tip => `<li>• ${tip}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <!-- Care Instructions -->
+                        <div class="mb-6 p-3 bg-blue-50 rounded-xl">
+                            <h4 class="font-semibold text-blue-800 mb-1">Care Instructions:</h4>
+                            <p class="text-sm text-blue-700">${product.careInstructions}</p>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-3">
+                            <button data-action="modal-toggle-wishlist" data-product-id="${product.id}" id="modal-wishlist-btn" class="flex-1 ${wishlist.includes(product.id) ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'} py-3 px-4 rounded-xl font-semibold">
+                                ${wishlist.includes(product.id) ? '❤️ Remove from Wishlist' : '🤍 Add to Wishlist'}
+                            </button>
+                            <button data-action="modal-buy" data-product-id="${product.id}" class="flex-1 btn-primary text-white py-3 px-4 rounded-xl font-semibold">
+                                🛒 Buy Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Store current product for photo changing
+            window.currentModalProduct = product;
+
+            const modalEl = document.getElementById('product-modal');
+            modalEl.classList.remove('hidden');
+            modalEl.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            trapFocus(modalEl);
+        }
+
+        function proceedToPurchase(productId) {
+            const product = products.find(p => p.id === productId);
+            
+            // Check stock availability
+            if (product.sizes[0].stock <= 0) {
+                alert('Maaf, produk ini sedang habis stok');
+                return;
+            }
+            
+            // Open Shopee link
+            window.open(product.shopeeUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function changePhoto(index) {
+            const product = window.currentModalProduct;
+            if (!product || !Array.isArray(product.photos) || !product.photos[index] || !product.photos[index].url) return;
+
+            // Update main photo
+            document.getElementById('main-photo').src = product.photos[index].url;
+
+            // Update indicators
+            document.querySelectorAll('.photo-indicator').forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+        }
+
+        function updateModalWishlistBtn(productId) {
+            const btn = document.getElementById('modal-wishlist-btn');
+            const isWishlisted = wishlist.includes(productId);
+            
+            btn.className = `flex-1 ${isWishlisted ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'} py-3 px-4 rounded-xl font-semibold`;
+            btn.textContent = isWishlisted ? '❤️ Remove from Wishlist' : '🤍 Add to Wishlist';
+        }
+
+        function closeModal() {
+            const modalEl = document.getElementById('product-modal');
+            modalEl.classList.add('hidden');
+            modalEl.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = 'auto';
+            window.currentModalProduct = null;
+            releaseFocus(modalEl);
+        }
+
+        // Filter Functions
+        function applyFilters() {
+            renderProducts();
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Event Listeners
+        document.addEventListener('click', function(event) {
+            // Handle modal preview image clicks
+            if (event.target.classList.contains('preview-image')) {
+                event.stopPropagation();
+                const photos = JSON.parse(event.target.dataset.photos || '[]');
+                if (photos.length > 0) {
+                    openImagePreview(event.target.src, photos);
+                }
+            }
+            
+            // Handle modal backdrop clicks
+            if (event.target.classList.contains('modal-backdrop')) {
+                if (document.getElementById('image-modal').classList.contains('flex')) {
+                    closeImagePreview();
+                } else {
+                    closeModal();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                if (document.getElementById('image-modal').classList.contains('flex')) {
+                    closeImagePreview();
+                } else {
+                    closeModal();
+                }
+            }
+        });
+
+        // Delegated event handlers to replace inline onclicks
+        document.addEventListener('click', function (e) {
+            const el = e.target;
+
+            // Nav actions (data-section)
+            const nav = el.closest('.nav-action');
+            if (nav) {
+                e.preventDefault();
+                const section = nav.dataset.section;
+                if (section) showSection(section);
+                return;
+            }
+
+            // Mobile menu toggle
+            if (el.id === 'mobile-menu-btn' || el.closest('#mobile-menu-btn')) {
+                toggleMobileMenu();
+                return;
+            }
+
+            // Product card click (open modal)
+            const card = el.closest('.product-card-el');
+            if (card && !el.closest('[data-action="toggle-wishlist"]')) {
+                const pid = Number(card.dataset.productId);
+                if (pid) openModal(pid);
+                return;
+            }
+
+            // Wishlist toggle from product card
+            const wbtn = el.closest('[data-action="toggle-wishlist"]');
+            if (wbtn) {
+                e.stopPropagation();
+                const pid = Number(wbtn.dataset.productId);
+                toggleWishlist(pid);
+                renderProducts();
+                return;
+            }
+
+            // Quiz option selection
+            const qopt = el.closest('.quiz-option');
+            if (qopt) {
+                const value = qopt.dataset.quizValue || qopt.getAttribute('data-quiz-value');
+                const styles = JSON.parse(qopt.dataset.quizStyles || qopt.getAttribute('data-quiz-styles') || '[]');
+                // store element to allow selectQuizAnswer to add visual selected class
+                window._lastClickedQuizEl = qopt;
+                selectQuizAnswer(value, styles);
+                return;
+            }
+
+            // Modal photo change
+            const photoBtn = el.closest('[data-action="change-photo"]');
+            if (photoBtn) {
+                const idx = Number(photoBtn.dataset.index);
+                changePhoto(idx);
+                return;
+            }
+
+            // Open modal via data-action
+            const openModalBtn = el.closest('[data-action="open-modal"]');
+            if (openModalBtn) {
+                const pid = Number(openModalBtn.dataset.productId);
+                if (pid) openModal(pid);
+                return;
+            }
+
+            // Calculate size action
+            const calcBtn = el.closest('[data-action="calculate-size"]');
+            if (calcBtn) {
+                calculateSize();
+                return;
+            }
+
+            // Browse products from wishlist
+            const showProductsBtn = el.closest('[data-action="show-products"]');
+            if (showProductsBtn) {
+                showSection('products');
+                return;
+            }
+
+            // Modal wishlist button
+            const modalW = el.closest('[data-action="modal-toggle-wishlist"]');
+            if (modalW) {
+                const pid = Number(modalW.dataset.productId);
+                toggleWishlist(pid);
+                updateModalWishlistBtn(pid);
+                renderProducts();
+                return;
+            }
+
+            // Modal buy
+            const modalBuy = el.closest('[data-action="modal-buy"]');
+            if (modalBuy) {
+                const pid = Number(modalBuy.dataset.productId);
+                proceedToPurchase(pid);
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

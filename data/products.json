@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "name": "Knit Berry Oversize Cardigan",
+    "price": 129000,
+    "material": "Soft Acrylic Knit",
+    "images": ["https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=600&auto=format&fit=crop"],
+    "video": null,
+    "description": "Bahan Premium Cotton Knit yang sangat tebal namun tidak panas. Sangat cocok dipadukan dengan rok skirt atau kulot.",
+    "rating": 4.9,
+    "badge": "BEST SELLER",
+    "status": "active",
+    "createdAt": "2026-08-14T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Peach Blossom Crop Cardigan",
+    "price": 115000,
+    "material": "Korean Cotton",
+    "images": ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=600&auto=format&fit=crop"],
+    "video": null,
+    "description": "Model Crop style Korea yang manis dengan kancing mutiara vintage. Ringan dan halus.",
+    "rating": 4.8,
+    "badge": "NEW",
+    "status": "active",
+    "createdAt": "2026-08-14T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Cloudy Soft Pastel Cardigan",
+    "price": 135000,
+    "material": "Fine Wool Blend",
+    "images": ["https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=600&auto=format&fit=crop"],
+    "video": null,
+    "description": "Tekstur super lembut bak awan dengan detail rajutan berongga halus. Sangat estetik untuk outfit harian.",
+    "rating": 5,
+    "badge": null,
+    "status": "active",
+    "createdAt": "2026-08-14T00:00:00.000Z"
+  }
+]

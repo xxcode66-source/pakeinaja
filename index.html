@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAKEINAJA - Cardigan Cute & Soft</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Font - Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pinkCute: '#FF8FAB',
+            pinkSoft: '#FFE5EC',
+            pinkAccent: '#FB6F92',
+            pinkDark: '#D81159',
+          },
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#FFF0F5] font-poppins text-gray-700">
+
+  <!-- Header / Navbar -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-sm border-b border-pinkSoft">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Logo -->
+      <div>
+        <h1 class="text-2xl font-bold tracking-wide text-pinkDark">PAKEIN<span class="text-pinkCute">AJA</span></h1>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
+        <input type="text" id="searchInput" placeholder="Cari cardigan favoritmu... ✨" class="w-full bg-pinkSoft/40 border border-pinkCute/30 rounded-full py-2 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" oninput="debounceSearch()">
+        <button onclick="doSearch()" class="absolute right-3 top-2.5 text-pinkDark hover:scale-110 transition">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+
+      <!-- User Icons -->
+      <div class="flex items-center gap-4 text-pinkDark text-lg">
+        <a href="/how-to-order.html" class="text-sm text-pinkDark font-semibold bg-pinkSoft px-3 py-1.5 rounded-full hover:bg-pinkCute hover:text-white transition hidden md:inline-flex items-center gap-1">
+          <i class="fa-solid fa-bag-shopping text-xs"></i> Cara Order
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-4 mt-6">
+
+    <!-- Banner Promo -->
+    <div class="bg-gradient-to-r from-pinkCute to-pinkAccent rounded-3xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden mb-4 flex flex-col md:flex-row items-center justify-between">
+      <div class="z-10 text-center md:text-left">
+        <span class="bg-white/20 backdrop-blur-sm text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Koleksi Terbaru ✨</span>
+        <h2 class="text-2xl md:text-4xl font-extrabold mt-2 mb-2">Cardigan Rajut 🧶</h2>
+        <p class="text-pinkSoft text-sm md:text-base mb-4">Adem, lembut di kulit, dan bikin gaya kamu makin *cute*!</p>
+        <a href="https://wa.me/6281389945358?text=Halo%20Kak%20Pakeinaja%2C%20saya%20mau%20tanya%20tentang%20koleksi%20cardigan%20nya" target="_blank" class="inline-block bg-white text-pinkDark font-semibold px-6 py-2.5 rounded-full shadow-md hover:bg-pinkSoft hover:scale-105 transition">Cek Sekarang</a>
+      </div>
+      <div class="text-7xl mt-4 md:mt-0 z-10 animate-bounce">🎀</div>
+    </div>
+
+    <!-- Info Siapa Cepat Dia Dapat -->
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-3 mb-4 flex items-center justify-center gap-2 text-center">
+      <i class="fa-solid fa-bolt text-amber-500 text-lg"></i>
+      <p class="text-sm font-semibold text-amber-700">Siapa cepat dia dapat! Stok terbatas, jangan sampai kehabisan ya Kak ✨</p>
+      <i class="fa-solid fa-bolt text-amber-500 text-lg"></i>
+    </div>
+
+    <!-- Mobile: Cara Order Button -->
+    <div class="md:hidden mb-4">
+      <a href="/how-to-order.html" class="block text-center bg-gradient-to-r from-pinkCute to-pinkDark text-white font-bold py-2.5 rounded-2xl text-sm shadow-md hover:opacity-95 transition">
+        <i class="fa-solid fa-bag-shopping mr-1"></i> Cara Order di PAKEINAJA
+      </a>
+    </div>
+
+    <!-- Grid Produk Cardigan -->
+    <section>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+        <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <span>Koleksi Cardigan</span> 💖
+        </h3>
+        <!-- Price Filter -->
+        <div class="flex gap-1.5 flex-wrap">
+          <button onclick="filterPrice('')" id="filterAll" class="price-filter-btn text-xs bg-pinkSoft text-pinkDark font-semibold px-3 py-1.5 rounded-full hover:bg-pinkCute hover:text-white transition active-filter">Semua Harga</button>
+          <button onclick="filterPrice('murce')" id="filterMurce" class="price-filter-btn text-xs bg-green-50 text-green-600 font-semibold px-3 py-1.5 rounded-full hover:bg-green-500 hover:text-white transition">💰 Murce</button>
+          <button onclick="filterPrice('medium')" id="filterMedium" class="price-filter-btn text-xs bg-blue-50 text-blue-600 font-semibold px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition">⭐ Medium</button>
+          <button onclick="filterPrice('premi')" id="filterPremi" class="price-filter-btn text-xs bg-purple-50 text-purple-600 font-semibold px-3 py-1.5 rounded-full hover:bg-purple-500 hover:text-white transition">💎 Premi</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="productGrid">
+        <!-- Products will be loaded dynamically from backend -->
+      </div>
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="flex flex-col items-center justify-center py-16">
+        <div class="w-12 h-12 border-4 border-pinkSoft border-t-pinkCute rounded-full animate-spin"></div>
+        <p class="text-sm text-gray-400 mt-3">Memuat koleksi cardigan...</p>
+      </div>
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16">
+        <div class="text-5xl mb-3">🔍</div>
+        <p class="text-gray-500 font-semibold">Produk tidak ditemukan</p>
+        <p class="text-xs text-gray-400 mt-1">Coba kata kunci lain ya Kak ✨</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-pinkSoft mt-12">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <div class="flex flex-col items-center gap-4">
+        <!-- Logo Footer -->
+        <div class="flex items-center gap-2">
+          <img src="pakein.jpg" alt="PAKEINAJA" class="w-8 h-8 rounded-xl object-cover shadow">
+          <h2 class="text-lg font-bold text-pinkDark">PAKEIN<span class="text-pinkCute">AJA</span></h2>
+        </div>
+        <p class="text-xs text-gray-400 text-center">Cardigan cute & soft berkualitas untuk gaya harianmu 🌸</p>
+
+        <!-- Social Links -->
+        <div class="flex items-center gap-6">
+          <a href="https://wa.me/6281389945358" target="_blank" class="flex items-center gap-2 text-sm text-green-600 hover:text-green-700 transition">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            <span class="font-medium">081389945358</span>
+          </a>
+          <a href="https://www.tiktok.com/@pakeinaja" target="_blank" class="flex items-center gap-2 text-sm text-gray-700 hover:text-pinkDark transition">
+            <i class="fa-brands fa-tiktok text-lg"></i>
+            <span class="font-medium">@pakeinaja</span>
+          </a>
+        </div>
+
+        <div class="w-full border-t border-pinkSoft pt-4 mt-2">
+          <p class="text-[11px] text-gray-400 text-center">&copy; 2026 PAKEINAJA. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DETAIL PRODUK -->
+  <div id="productModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Close Button -->
+      <button onclick="closeModal()" class="absolute top-3 right-3 bg-white/80 hover:bg-white text-gray-700 w-8 h-8 rounded-full flex items-center justify-center z-10 shadow transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Gallery + Video Area -->
+      <div class="relative bg-pinkSoft/30">
+        <!-- Main Image/Video Display -->
+        <div id="modalMediaBox" class="h-72 w-full relative">
+          <img id="modalImg" src="" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox()">
+          <div id="mediaZoomHint" class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition cursor-zoom-in" onclick="openLightbox()">
+            <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 hover:opacity-100 transition"></i>
+          </div>
+        </div>
+        <!-- Thumbnail Strip -->
+        <div id="modalThumbs" class="flex gap-1.5 p-2 overflow-x-auto bg-black/5"></div>
+      </div>
+
+      <!-- Info Detail -->
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <h3 id="modalTitle" class="text-lg font-bold text-gray-800">Nama Produk</h3>
+            <p id="modalPrice" class="text-xl font-extrabold text-pinkDark mt-0.5">Rp 0</p>
+          </div>
+          <button class="text-pinkCute hover:text-pinkDark text-xl" title="Wishlist"><i class="fa-regular fa-heart"></i></button>
+        </div>
+
+        <p id="modalDesc" class="text-xs text-gray-500 mb-4 leading-relaxed">Deskripsi produk...</p>
+
+        <!-- Petunjuk Perawatan -->
+        <div class="bg-pinkSoft/40 border border-pinkCute/20 rounded-2xl p-4 mb-5">
+          <h4 class="text-xs font-bold text-pinkDark uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-sparkles"></i> Petunjuk Perawatan Cardigan
+          </h4>
+          <div class="grid grid-cols-2 gap-3 text-[11px]">
+            <div class="bg-white p-2.5 rounded-xl border border-pinkSoft">
+              <span class="font-bold text-gray-700 flex items-center gap-1 mb-1">
+                <i class="fa-solid fa-soap text-pinkCute"></i> Cara Cuci:
+              </span>
+              <ul class="list-disc list-inside text-gray-600 space-y-0.5">
+                <li>Cuci lembut pakai tangan</li>
+                <li>Gunakan pembersih cair</li>
+                <li>Jangan diperas terlalu kuat</li>
+              </ul>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-pinkSoft">
+              <span class="font-bold text-gray-700 flex items-center gap-1 mb-1">
+                <i class="fa-solid fa-temperature-low text-pinkCute"></i> Cara Setrika:
+              </span>
+              <ul class="list-disc list-inside text-gray-600 space-y-0.5">
+                <li>Suhu rendah (Low Heat)</li>
+                <li>Gunakan alas kain pelapis</li>
+                <li>Lebih disarankan Steam/Uap</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tombol WhatsApp -->
+        <div class="flex gap-2">
+          <button id="btnTanyaWA" class="flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-bold py-3 rounded-2xl text-sm transition flex items-center justify-center gap-2 border border-green-200">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Tanya Ketersediaan
+          </button>
+          <button id="btnBeliWA" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-2xl text-sm shadow-md hover:opacity-95 transition flex items-center justify-center gap-2">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Beli via WA
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX FULLSCREEN -->
+  <div id="lightbox" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-center justify-center" onclick="closeLightbox(event)">
+    <!-- Close -->
+    <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/80 hover:text-white w-10 h-10 rounded-full bg-white/10 flex items-center justify-center z-10 transition">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+    <!-- Counter -->
+    <div id="lbCounter" class="absolute top-4 left-4 text-white/70 text-sm font-medium bg-black/30 px-3 py-1.5 rounded-full"></div>
+    <!-- Prev -->
+    <button onclick="lbPrev(event)" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <!-- Next -->
+    <button onclick="lbNext(event)" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <!-- Image Container with zoom -->
+    <div id="lbContainer" class="w-full h-full flex items-center justify-center overflow-auto" onwheel="lbZoom(event)" ontouchmove="lbPinch(event)">
+      <img id="lbImg" src="" class="max-w-none transition-transform duration-100" style="transform: scale(1)" draggable="false">
+    </div>
+    <!-- Zoom controls -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
+      <button onclick="lbZoomBtn(-0.25)" class="text-white/70 hover:text-white w-9 h-9 rounded-full bg-white/10 flex items-center justify-center transition text-sm">−</button>
+      <span id="lbZoomLevel" class="text-white/60 text-xs font-medium min-w-[3rem] text-center">100%</span>
+      <button onclick="lbZoomBtn(0.25)" class="text-white/70 hover:text-white w-9 h-9 rounded-full bg-white/10 flex items-center justify-center transition text-sm">+</button>
+      <button onclick="lbResetZoom()" class="text-white/70 hover:text-white w-9 h-9 rounded-full bg-white/10 flex items-center justify-center transition text-xs ml-1"><i class="fa-solid fa-expand"></i></button>
+    </div>
+  </div>
+
+  <!-- JavaScript - Backend API Integration -->
+  <script>
+    const API_BASE = '/api';
+    const WA_NUMBER = '6281389945358'; // 081389945358
+    const modal = document.getElementById('productModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalMediaBox = document.getElementById('modalMediaBox');
+    const modalThumbs = document.getElementById('modalThumbs');
+
+    let currentProduct = null;
+    let currentMediaList = []; // images + video
+    let currentMediaIndex = 0;
+    let lbScale = 1;
+
+    // Format harga ke Rupiah
+    function formatPrice(price) {
+      return 'Rp ' + Number(price).toLocaleString('id-ID');
+    }
+
+    // Render product cards dari data API
+    function renderProducts(products) {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = products.map((p, idx) => {
+        const thumbSrc = (p.images && p.images.length > 0) ? p.images[0] : '';
+        const hasVideo = p.video ? 'true' : 'false';
+        const priceTag = p.price >= 5000 && p.price <= 25000
+          ? '<span class="absolute top-2 right-2 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">💰 Murce</span>'
+          : p.price >= 26000 && p.price <= 35000
+          ? '<span class="absolute top-2 right-2 bg-blue-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">⭐ Medium</span>'
+          : p.price >= 36000
+          ? '<span class="absolute top-2 right-2 bg-purple-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">💎 Premi</span>'
+          : '';
+        return `
+          <div onclick='openModalByIndex(${idx})' class="bg-white rounded-3xl p-3 border border-pinkSoft shadow-sm hover:shadow-md transition cursor-pointer group">
+            <div class="relative overflow-hidden rounded-2xl mb-3 bg-pinkSoft/30 aspect-square">
+              <img src="${thumbSrc}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              ${p.badge ? `<span class="absolute top-2 left-2 ${p.badge === 'BEST SELLER' ? 'bg-pinkDark' : p.badge === 'BARU' ? 'bg-green-500' : 'bg-pinkCute'} text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${p.badge}</span>` : ''}
+              ${priceTag}
+              ${p.video ? '<span class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-play"></i> Video</span>' : ''}
+              ${p.images && p.images.length > 1 ? `<span class="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-images"></i> ${p.images.length}</span>` : ''}
+            </div>
+            <h4 class="font-semibold text-sm text-gray-800 line-clamp-1">${p.name}</h4>
+            <p class="text-xs text-gray-400 mb-1">${p.material}</p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="font-bold text-pinkDark text-sm">${formatPrice(p.price)}</span>
+              <span class="text-[11px] text-amber-500 font-medium"><i class="fa-solid fa-star"></i> ${p.rating}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Store loaded products for modal access
+    let loadedProducts = [];
+    let searchTimeout = null;
+    let currentPriceFilter = '';
+
+    // Filter by price range
+    function filterPrice(range) {
+      currentPriceFilter = range;
+      // Update button styles
+      document.querySelectorAll('.price-filter-btn').forEach(btn => {
+        btn.classList.remove('active-filter', 'ring-2', 'ring-pinkCute', 'ring-green-500', 'ring-blue-500', 'ring-purple-500');
+      });
+      if (range === '') {
+        document.getElementById('filterAll').classList.add('active-filter');
+      } else if (range === 'murce') {
+        document.getElementById('filterMurce').classList.add('active-filter');
+      } else if (range === 'medium') {
+        document.getElementById('filterMedium').classList.add('active-filter');
+      } else if (range === 'premi') {
+        document.getElementById('filterPremi').classList.add('active-filter');
+      }
+      doSearch();
+    }
+
+    // Debounce search (wait 300ms after user stops typing)
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(doSearch, 300);
+    }
+
+    // Search products
+    function doSearch() {
+      const query = document.getElementById('searchInput')?.value.trim().toLowerCase() || '';
+      loadProducts(query, currentPriceFilter);
+    }
+
+    // Fetch products dari backend
+    async function loadProducts(search = '', priceRange = '') {
+      const spinner = document.getElementById('loadingSpinner');
+      const grid = document.getElementById('productGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      // Show loading
+      spinner.classList.remove('hidden');
+      grid.classList.add('hidden');
+      emptyState.classList.add('hidden');
+
+      try {
+        let url = `${API_BASE}/products?status=active`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (priceRange) url += `&price_range=${priceRange}`;
+
+        const res = await fetch(url);
+        const result = await res.json();
+        if (result.success) {
+          loadedProducts = result.data;
+          spinner.classList.add('hidden');
+          grid.classList.remove('hidden');
+
+          if (loadedProducts.length === 0) {
+            grid.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+          } else {
+            renderProducts(loadedProducts);
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memuat produk:', err);
+        spinner.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+      }
+    }
+
+    // Open modal by product index (prevents double modal)
+    function openModalByIndex(idx) {
+      const p = loadedProducts[idx];
+      if (!p) return;
+      currentProduct = p;
+
+      // Set text info
+      modalTitle.innerText = p.name;
+      modalPrice.innerText = formatPrice(p.price);
+      modalDesc.innerText = p.description;
+
+      // Build media list (images + video)
+      currentMediaList = [];
+      const images = p.images || [];
+      images.forEach(img => currentMediaList.push({ type: 'image', src: img }));
+      if (p.video) currentMediaList.push({ type: 'video', src: p.video });
+      currentMediaIndex = 0;
+
+      // Main media: show first image or video
+      if (images.length > 0) {
+        modalMediaBox.innerHTML = `<img src="${images[0]}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox()"><div class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition cursor-zoom-in" onclick="openLightbox()"><i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 hover:opacity-100 transition"></i></div>`;
+      } else if (p.video) {
+        modalMediaBox.innerHTML = `<video src="${p.video}" class="w-full h-full object-cover" controls></video>`;
+      }
+
+      // Thumbnails
+      let thumbsHTML = '';
+      currentMediaList.forEach((media, i) => {
+        if (media.type === 'image') {
+          thumbsHTML += `<img src="${media.src}" onclick="switchMedia(${i})" class="w-14 h-14 rounded-lg object-cover cursor-pointer border-2 ${i === 0 ? 'border-pinkCute' : 'border-transparent'} hover:border-pinkCute transition flex-shrink-0">`;
+        } else {
+          thumbsHTML += `<div onclick="switchMedia(${i})" class="w-14 h-14 rounded-lg bg-gray-800 cursor-pointer border-2 border-transparent hover:border-pinkCute transition flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-play text-white text-xs"></i></div>`;
+        }
+      });
+      modalThumbs.innerHTML = thumbsHTML;
+      modalThumbs.style.display = currentMediaList.length > 1 ? 'flex' : 'none';
+
+      // WA buttons
+      const productName = encodeURIComponent(p.name);
+      const tanyaText = encodeURIComponent(`Halo Kak Pakeinaja, saya mau tanya apakah "${p.name}" (${formatPrice(p.price)}) masih tersedia? Terima kasih 🙏`);
+      const beliText = encodeURIComponent(`Halo Kak Pakeinaja, saya mau order "${p.name}" (${formatPrice(p.price)}) ya Kak. Mohon info untuk pembayaran dan pengirimannya. Terima kasih 🙏`);
+
+      document.getElementById('btnTanyaWA').onclick = () => {
+        window.open(`https://wa.me/${WA_NUMBER}?text=${tanyaText}`, '_blank');
+      };
+      document.getElementById('btnBeliWA').onclick = () => {
+        window.open(`https://wa.me/${WA_NUMBER}?text=${beliText}`, '_blank');
+      };
+
+      modal.classList.remove('hidden');
+    }
+
+    // Switch media in modal
+    function switchMedia(idx) {
+      currentMediaIndex = idx;
+      const media = currentMediaList[idx];
+      if (media.type === 'image') {
+        modalMediaBox.innerHTML = `<img src="${media.src}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox()"><div class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition cursor-zoom-in" onclick="openLightbox()"><i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 hover:opacity-100 transition"></i></div>`;
+      } else {
+        modalMediaBox.innerHTML = `<video src="${media.src}" class="w-full h-full object-cover" controls autoplay></video>`;
+      }
+      // Update thumb borders
+      modalThumbs.querySelectorAll('img, div').forEach((t, i) => {
+        t.classList.toggle('border-pinkCute', i === idx);
+        t.classList.toggle('border-transparent', i !== idx);
+      });
+    }
+
+    // ========== LIGHTBOX ==========
+    function openLightbox() {
+      const media = currentMediaList[currentMediaIndex];
+      if (!media || media.type !== 'image') return;
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      lbImg.src = media.src;
+      lbScale = 1;
+      lbImg.style.transform = 'scale(1)';
+      document.getElementById('lbZoomLevel').innerText = '100%';
+      updateLbCounter();
+      lb.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(e) {
+      if (e && e.target !== e.currentTarget && !e.target.closest('button.fa-xmark')) return;
+      document.getElementById('lightbox').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function updateLbCounter() {
+      const imageItems = currentMediaList.filter(m => m.type === 'image');
+      const currentImgIdx = currentMediaList.slice(0, currentMediaIndex + 1).filter(m => m.type === 'image').length;
+      document.getElementById('lbCounter').innerText = `${currentImgIdx} / ${imageItems.length}`;
+    }
+
+    function lbPrev(e) {
+      if (e) e.stopPropagation();
+      // Find previous image
+      let idx = currentMediaIndex;
+      do {
+        idx = (idx - 1 + currentMediaList.length) % currentMediaList.length;
+      } while (currentMediaList[idx].type !== 'image' && idx !== currentMediaIndex);
+      currentMediaIndex = idx;
+      const lbImg = document.getElementById('lbImg');
+      lbImg.src = currentMediaList[idx].src;
+      lbResetZoom();
+      updateLbCounter();
+      // Also update modal
+      switchMedia(idx);
+    }
+
+    function lbNext(e) {
+      if (e) e.stopPropagation();
+      let idx = currentMediaIndex;
+      do {
+        idx = (idx + 1) % currentMediaList.length;
+      } while (currentMediaList[idx].type !== 'image' && idx !== currentMediaIndex);
+      currentMediaIndex = idx;
+      const lbImg = document.getElementById('lbImg');
+      lbImg.src = currentMediaList[idx].src;
+      lbResetZoom();
+      updateLbCounter();
+      switchMedia(idx);
+    }
+
+    function lbZoom(e) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.15 : 0.15;
+      lbZoomBtn(delta);
+    }
+
+    function lbZoomBtn(delta) {
+      lbScale = Math.max(0.5, Math.min(5, lbScale + delta));
+      document.getElementById('lbImg').style.transform = `scale(${lbScale})`;
+      document.getElementById('lbZoomLevel').innerText = Math.round(lbScale * 100) + '%';
+    }
+
+    function lbResetZoom() {
+      lbScale = 1;
+      document.getElementById('lbImg').style.transform = 'scale(1)';
+      document.getElementById('lbZoomLevel').innerText = '100%';
+    }
+
+    // Pinch to zoom (mobile)
+    let lastPinchDist = 0;
+    function lbPinch(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (lastPinchDist > 0) {
+          const delta = (dist - lastPinchDist) * 0.005;
+          lbZoomBtn(delta);
+        }
+        lastPinchDist = dist;
+      }
+    }
+    document.addEventListener('touchend', () => { lastPinchDist = 0; });
+
+    // Keyboard navigation for lightbox
+    document.addEventListener('keydown', (e) => {
+      const lb = document.getElementById('lightbox');
+      if (lb.classList.contains('hidden')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbPrev();
+      if (e.key === 'ArrowRight') lbNext();
+      if (e.key === '+' || e.key === '=') lbZoomBtn(0.25);
+      if (e.key === '-') lbZoomBtn(-0.25);
+    });
+
+    // Fungsi Tutup Modal
+    function closeModal() {
+      modal.classList.add('hidden');
+      currentProduct = null;
+    }
+
+    // Modal menutup saat klik area luar
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Load produk saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProducts();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - PAKEINAJA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pinkCute: '#f9a8d4',
+            pinkSoft: '#fce7f3',
+            pinkDark: '#db2777',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .hidden-admin { display: none !important; }
+  </style>
+</head>
+<body class="bg-pinkSoft/40 min-h-screen">
+
+  <!-- ========== LOGIN TOKEN ========== -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-lg p-8 w-full max-w-sm">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 bg-pinkCute/30 rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fa-solid fa-lock text-pinkDark text-xl"></i>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">Admin PAKEINAJA</h1>
+        <p class="text-sm text-gray-400 mt-1">Masukkan token admin untuk masuk</p>
+      </div>
+      <input id="tokenInput" type="password" placeholder="Admin Token"
+        class="w-full border border-pinkSoft rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute mb-3">
+      <button onclick="doLogin()" class="w-full bg-pinkDark text-white font-semibold py-3 rounded-xl hover:bg-pink-700 transition text-sm">
+        Masuk
+      </button>
+      <p id="loginError" class="text-xs text-red-500 mt-3 text-center hidden"></p>
+    </div>
+  </div>
+
+  <!-- ========== DASHBOARD ========== -->
+  <div id="dashView" class="hidden-admin">
+    <header class="bg-white border-b border-pinkSoft sticky top-0 z-40">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-shirt text-pinkDark text-xl"></i>
+          <span class="font-bold text-gray-800">PAKEINAJA <span class="text-xs font-medium text-gray-400">admin</span></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="/" class="text-xs text-gray-500 hover:text-pinkDark"><i class="fa-solid fa-store"></i> Lihat Toko</a>
+          <button onclick="doLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-full">Keluar</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+
+      <!-- Statistik -->
+      <section class="grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-2xl p-4 border border-pinkSoft shadow-sm text-center">
+          <p class="text-[11px] text-gray-400 uppercase tracking-wide">Tersedia</p>
+          <p id="statActive" class="text-2xl font-bold text-gray-800">0</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-pinkSoft shadow-sm text-center">
+          <p class="text-[11px] text-gray-400 uppercase tracking-wide">Kejual</p>
+          <p id="statSold" class="text-2xl font-bold text-green-600">0</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-pinkSoft shadow-sm text-center">
+          <p class="text-[11px] text-gray-400 uppercase tracking-wide">Total Omzet</p>
+          <p id="statRevenue" class="text-2xl font-bold text-pinkDark">Rp 0</p>
+        </div>
+      </section>
+
+      <!-- Form tambah / edit barang -->
+      <section class="bg-white rounded-3xl p-5 border border-pinkSoft shadow-sm">
+        <h2 id="formTitle" class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-plus text-pinkDark mr-1"></i> Tambah Barang</h2>
+        <input type="hidden" id="editId">
+        <div class="grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-gray-500">Nama barang *</label>
+            <input id="fName" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Misal: Cardigan Rajut Peach">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500">Harga (Rp) *</label>
+              <input id="fPrice" type="number" min="0" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="35000">
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Badge</label>
+              <select id="fBadge" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm bg-white">
+                <option value="">— tidak ada —</option>
+                <option>BARU</option>
+                <option>BEST SELLER</option>
+                <option>PREMI</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500">Bahan</label>
+            <input id="fMaterial" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Misal: Cotton Knit">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500">Video (opsional, URL)</label>
+            <input id="fVideo" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="https://... .mp4">
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs text-gray-500">Deskripsi</label>
+            <textarea id="fDesc" rows="2" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Deskripsi singkat barang..."></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs text-gray-500">Foto-foto (maks 8, @8MB)</label>
+            <input id="fImages" type="file" accept="image/*" multiple class="w-full text-sm file:bg-pinkSoft file:text-pinkDark file:border-0 file:rounded-xl file:px-4 file:py-2 file:mr-3 file:cursor-pointer">
+            <div id="imgPreview" class="flex flex-wrap gap-2 mt-3"></div>
+            <p id="uploadStatus" class="text-xs text-gray-400 mt-1 hidden"></p>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-5">
+          <button id="btnSave" onclick="saveProduct()" class="bg-pinkDark text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-pink-700 transition">
+            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan
+          </button>
+          <button onclick="resetForm()" class="text-sm text-gray-500 bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-xl">Batal / Reset</button>
+        </div>
+      </section>
+
+      <!-- Daftar barang aktif -->
+      <section class="bg-white rounded-3xl p-5 border border-pinkSoft shadow-sm">
+        <h2 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-boxes-stacked text-pinkDark mr-1"></i> Barang Dijual <span id="listCount" class="text-xs font-medium text-gray-400"></span></h2>
+        <div id="productList" class="space-y-3">
+          <p class="text-sm text-gray-400">Memuat...</p>
+        </div>
+      </section>
+
+      <!-- Riwayat terjual -->
+      <section class="bg-white rounded-3xl p-5 border border-pinkSoft shadow-sm">
+        <button onclick="toggleHistory()" class="w-full flex items-center justify-between">
+          <h2 class="font-bold text-gray-800"><i class="fa-solid fa-chart-line text-green-600 mr-1"></i> Riwayat Terjual</h2>
+          <i id="histChevron" class="fa-solid fa-chevron-down text-gray-400 text-sm transition"></i>
+        </button>
+        <div id="histBody" class="hidden mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs text-gray-400">Total kejual: <b id="histCount" class="text-green-600">0</b> · Omzet: <b id="histRevenue" class="text-pinkDark">Rp 0</b></p>
+            <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-600">Hapus riwayat (reset hitungan)</button>
+          </div>
+          <div id="histList" class="space-y-1.5 max-h-72 overflow-y-auto"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-5 py-2.5 rounded-full shadow-xl opacity-0 pointer-events-none transition z-50"></div>
+
+  <script>
+    const API = '/api';
+    let TOKEN_KEY = 'pakein_admin_token';
+    let token = localStorage.getItem(TOKEN_KEY) || '';
+    let allProducts = [];
+    let currentStats = { soldCount: 0, revenue: 0, soldHistory: [] };
+    let pendingImages = []; // { url, name }
+
+    const $ = id => document.getElementById(id);
+    const rupiah = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+    const authHeaders = () => ({ 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' });
+
+    function toast(msg, ok = true) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.style.background = ok ? '' : '#dc2626';
+      t.style.opacity = '1';
+      setTimeout(() => t.style.opacity = '0', 2500);
+    }
+
+    // ---------- Auth ----------
+    async function doLogin() {
+      token = $('tokenInput').value.trim();
+      if (!token) return;
+      const ok = await loadAll();
+      if (ok) {
+        localStorage.setItem(TOKEN_KEY, token);
+        showDash();
+      } else {
+        $('loginError').textContent = 'Token salah / server tidak reachable';
+        $('loginError').classList.remove('hidden');
+        token = '';
+      }
+    }
+
+    function doLogout() {
+      localStorage.removeItem(TOKEN_KEY);
+      token = '';
+      $('loginView').classList.remove('hidden');
+      $('dashView').classList.add('hidden-admin');
+    }
+
+    function showDash() {
+      $('loginView').classList.add('hidden');
+      $('dashView').classList.remove('hidden-admin');
+    }
+
+    // ---------- Data ----------
+    async function loadAll() {
+      try {
+        const res = await fetch(`${API}/admin/products`, { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) return false;
+        const result = await res.json();
+        if (!result.success) return false;
+        allProducts = result.products || [];
+        currentStats = result.stats || currentStats;
+        renderAll();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function renderAll() {
+      $('statActive').textContent = allProducts.length;
+      $('statSold').textContent = currentStats.soldCount || 0;
+      $('statRevenue').textContent = rupiah(currentStats.revenue);
+      $('histCount').textContent = currentStats.soldCount || 0;
+      $('histRevenue').textContent = rupiah(currentStats.revenue);
+      $('listCount').textContent = `(${allProducts.length})`;
+
+      $('productList').innerHTML = allProducts.length === 0
+        ? '<p class="text-sm text-gray-400">Belum ada barang. Tambah di form atas ya.</p>'
+        : allProducts.map(p => `
+          <div class="flex items-center gap-3 border border-pinkSoft/60 rounded-2xl p-2.5">
+            <img src="${(p.images && p.images[0]) || ''}" onerror="this.style.visibility='hidden'" class="w-14 h-14 rounded-xl object-cover bg-pinkSoft/30 flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-sm text-gray-800 truncate">${p.name}</p>
+              <p class="text-xs text-gray-400">${p.material || '-'} ${p.badge ? '· <span class="text-pinkDark font-medium">' + p.badge + '</span>' : ''}</p>
+              <p class="text-sm font-bold text-pinkDark">${rupiah(p.price)}</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
+              <button onclick="markSold(${p.id})" class="text-xs bg-green-500 hover:bg-green-600 text-white font-semibold px-3 py-1.5 rounded-lg"><i class="fa-solid fa-check"></i> Terjual</button>
+              <button onclick="editProduct(${p.id})" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg">Edit</button>
+              <button onclick="deleteProduct(${p.id})" class="text-xs bg-red-50 hover:text-red-600 text-red-500 px-3 py-1.5 rounded-lg">Hapus</button>
+            </div>
+          </div>
+        `).join('');
+
+      const hist = currentStats.soldHistory || [];
+      $('histList').innerHTML = hist.length === 0
+        ? '<p class="text-sm text-gray-400">Belum ada yang terjual.</p>'
+        : hist.map(h => `
+          <div class="flex items-center justify-between text-sm py-1.5 border-b border-pinkSoft/40 last:border-0">
+            <span class="text-gray-700 truncate">${h.name}</span>
+            <span class="text-gray-400 text-xs flex-shrink-0 ml-3">${new Date(h.soldAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} · <b class="text-green-600">${rupiah(h.price)}</b></span>
+          </div>
+        `).join('');
+    }
+
+    // ---------- Upload gambar ----------
+    async function uploadFiles(fileList) {
+      const status = $('uploadStatus');
+      for (const file of fileList) {
+        if (pendingImages.length >= 8) { toast('Maks 8 foto', false); break; }
+        status.classList.remove('hidden');
+        status.textContent = `Mengupload ${file.name}...`;
+        try {
+          const res = await fetch(`${API}/admin/upload`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token, 'x-filename': file.name, 'Content-Type': file.type || 'application/octet-stream' },
+            body: file,
+          });
+          const result = await res.json();
+          if (result.success) {
+            pendingImages.push({ url: result.url, name: file.name });
+          } else {
+            toast(`${file.name}: ${result.error || 'gagal'}`, false);
+          }
+        } catch (e) {
+          toast(`${file.name}: gagal upload`, false);
+        }
+      }
+      status.classList.add('hidden');
+      renderImgPreviews();
+    }
+
+    function renderImgPreviews() {
+      $('imgPreview').innerHTML = pendingImages.map((img, i) => `
+        <div class="relative">
+          <img src="${img.url}" class="w-16 h-16 rounded-xl object-cover border border-pinkSoft">
+          <button onclick="removeImage(${i})" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      `).join('');
+    }
+
+    function removeImage(i) {
+      // Kalau URL blob lama (dari produk yang diedit), hapus dari daftar; server yang membersihkan blob-nya saat simpan
+      pendingImages.splice(i, 1);
+      renderImgPreviews();
+    }
+
+    // ---------- CRUD ----------
+    async function saveProduct() {
+      const name = $('fName').value.trim();
+      const price = Number($('fPrice').value);
+      if (!name) return toast('Nama barang wajib diisi', false);
+      if (!price) return toast('Harga wajib diisi', false);
+
+      const payload = {
+        name, price,
+        material: $('fMaterial').value.trim(),
+        description: $('fDesc').value.trim(),
+        badge: $('fBadge').value,
+        video: $('fVideo').value.trim() || null,
+        images: pendingImages.map(i => i.url),
+      };
+
+      const editId = $('editId').value;
+      $('btnSave').disabled = true;
+      try {
+        const url = editId ? `${API}/admin/products/${editId}` : `${API}/admin/products`;
+        const res = await fetch(url, { method: editId ? 'PATCH' : 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error || 'Gagal menyimpan');
+        toast(editId ? 'Barang diperbarui ✓' : 'Barang ditambahkan ✓');
+        resetForm();
+        await loadAll();
+      } catch (e) {
+        toast(e.message, false);
+      } finally {
+        $('btnSave').disabled = false;
+      }
+    }
+
+    function editProduct(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+      $('editId').value = p.id;
+      $('fName').value = p.name || '';
+      $('fPrice').value = p.price || '';
+      $('fMaterial').value = p.material || '';
+      $('fDesc').value = p.description || '';
+      $('fBadge').value = p.badge || '';
+      $('fVideo').value = p.video || '';
+      pendingImages = (p.images || []).map(u => ({ url: u, name: u.split('/').pop() }));
+      renderImgPreviews();
+      $('formTitle').innerHTML = '<i class="fa-solid fa-pen text-pinkDark mr-1"></i> Edit Barang';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      $('editId').value = '';
+      ['fName', 'fPrice', 'fMaterial', 'fDesc', 'fVideo'].forEach(id => $(id).value = '');
+      $('fBadge').value = '';
+      $('fImages').value = '';
+      pendingImages = [];
+      renderImgPreviews();
+      $('formTitle').innerHTML = '<i class="fa-solid fa-plus text-pinkDark mr-1"></i> Tambah Barang';
+    }
+
+    async function markSold(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+      if (!confirm(`Tandai "${p.name}" TERJUAL?\n\nBarang akan hilang dari etalase, hitungan kejual +1, dan omzet bertambah ${rupiah(p.price)}.`)) return;
+      try {
+        const res = await fetch(`${API}/admin/sell`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ id }) });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error || 'Gagal');
+        toast('Alhamdulillah, tercatat terjual ✓');
+        await loadAll();
+      } catch (e) {
+        toast(e.message, false);
+      }
+    }
+
+    async function deleteProduct(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+      if (!confirm(`Hapus "${p.name}" TANPA tercatat terjual? (tidak menambah hitungan/omzet)`)) return;
+      try {
+        const res = await fetch(`${API}/admin/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error || 'Gagal');
+        toast('Barang dihapus');
+        await loadAll();
+      } catch (e) {
+        toast(e.message, false);
+      }
+    }
+
+    // ---------- Riwayat ----------
+    function toggleHistory() {
+      $('histBody').classList.toggle('hidden');
+      $('histChevron').classList.toggle('rotate-180');
+    }
+
+    async function clearHistory() {
+      if (!confirm('PENTING: Reset hitungan kejual & omzet ke NOL dan kosongkan riwayat?\nData barang aktif tidak terpengaruh.')) return;
+      // Simpan ulang via endpoint khusus? Tidak ada — reuse sell pattern tidak cocok.
+      // Solusi ringan: kirimi PATCH katalog via /api/admin/stats
+      try {
+        const res = await fetch(`${API}/admin/stats`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ reset: true }) });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error || 'Gagal');
+        toast('Riwayat & hitungan direset');
+        await loadAll();
+      } catch (e) {
+        toast(e.message, false);
+      }
+    }
+
+    // ---------- Init ----------
+    $('fImages').addEventListener('change', e => {
+      if (e.target.files.length) uploadFiles([...e.target.files]);
+      e.target.value = '';
+    });
+    $('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+    (async function init() {
+      if (token && await loadAll()) showDash();
+    })();
+  </script>
+</body>
+</html>

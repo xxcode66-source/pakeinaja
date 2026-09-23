@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.glass {
+  @apply bg-white bg-opacity-95 backdrop-blur-sm;
+}
+
+.shadow-soft {
+  box-shadow: 0 2px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+.chip {
+  @apply px-2 py-0.5 rounded-lg text-xs font-medium;
+}
+
+.chip-rose {
+  @apply bg-rose-100 text-rose-700;
+}
+
+.chip-amber {
+  @apply bg-amber-100 text-amber-700;
+}

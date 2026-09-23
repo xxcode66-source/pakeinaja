@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cara Order - PAKEINAJA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pinkCute: '#FF8FAB',
+            pinkSoft: '#FFE5EC',
+            pinkAccent: '#FB6F92',
+            pinkDark: '#D81159',
+          },
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { opacity: 1; transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(255,143,171,0.3); }
+      50% { box-shadow: 0 0 20px rgba(255,143,171,0.6), 0 0 40px rgba(255,143,171,0.2); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-3deg); }
+      75% { transform: rotate(3deg); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
+    .animate-fadeInLeft { animation: fadeInLeft 0.8s ease-out forwards; opacity: 0; }
+    .animate-fadeInRight { animation: fadeInRight 0.8s ease-out forwards; opacity: 0; }
+    .animate-bounceIn { animation: bounceIn 0.8s ease-out forwards; opacity: 0; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .animate-wiggle { animation: wiggle 2s ease-in-out infinite; }
+    .animate-sparkle { animation: sparkle 1.5s ease-in-out infinite; }
+    .animate-slideDown { animation: slideDown 0.6s ease-out forwards; opacity: 0; }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+    .delay-700 { animation-delay: 0.7s; }
+    .delay-800 { animation-delay: 0.8s; }
+    .shimmer-bg {
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s infinite;
+    }
+    .step-line::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: -8px;
+      width: 2px;
+      background: linear-gradient(to bottom, #FF8FAB, #FFE5EC);
+    }
+    .step-line:last-child::before { display: none; }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(216, 17, 89, 0.1);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #D81159, #FF8FAB);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .note-card {
+      background: linear-gradient(135deg, #FFF0F5 0%, #FFE5EC 100%);
+    }
+    .fun-note {
+      background: linear-gradient(135deg, #FFF8E7 0%, #FFE5EC 50%, #F0E6FF 100%);
+    }
+  </style>
+</head>
+<body class="bg-[#FFF0F5] font-poppins text-gray-700 min-h-screen">
+
+  <!-- Header / Navbar -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-sm border-b border-pinkSoft">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <h1 class="text-2xl font-bold tracking-wide text-pinkDark">PAKEIN<span class="text-pinkCute">AJA</span></h1>
+      </a>
+      <nav class="flex items-center gap-4">
+        <a href="/" class="text-sm text-gray-500 hover:text-pinkDark transition font-medium">
+          <i class="fa-solid fa-house mr-1"></i> Home
+        </a>
+        <a href="/how-to-order.html" class="text-sm text-pinkDark font-semibold bg-pinkSoft px-3 py-1.5 rounded-full">
+          <i class="fa-solid fa-bag-shopping mr-1"></i> Cara Order
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 py-8">
+
+    <!-- Hero Section -->
+    <div class="text-center mb-10 animate-fadeInUp">
+      <div class="inline-block animate-float mb-4">
+        <span class="text-6xl">🛍️</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold gradient-text mb-3">Cara Order di PAKEINAJA</h1>
+      <p class="text-gray-500 text-sm md:text-base max-w-lg mx-auto">Gampang banget! Ikuti langkah-langkah di bawah ini ya Kak ✨</p>
+      <div class="flex items-center justify-center gap-2 mt-4">
+        <span class="w-2 h-2 bg-pinkCute rounded-full animate-bounce" style="animation-delay: 0s"></span>
+        <span class="w-2 h-2 bg-pinkAccent rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+        <span class="w-2 h-2 bg-pinkDark rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+      </div>
+    </div>
+
+    <!-- ==================== CARD 1: TikTok Live WAR ==================== -->
+    <div class="bg-white rounded-3xl shadow-lg border border-pinkSoft overflow-hidden mb-8 card-hover animate-fadeInLeft delay-200">
+      <!-- Card Header -->
+      <div class="bg-gradient-to-r from-pinkCute to-pinkAccent p-5 relative overflow-hidden">
+        <div class="shimmer-bg absolute inset-0"></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-wiggle">
+            <i class="fa-brands fa-tiktok text-white text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">Order via TikTok Live WAR</h2>
+            <p class="text-pinkSoft text-xs">Untuk cardigan yang sedang live di TikTok</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="p-6 space-y-5">
+        <!-- Step 1 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkCute to-pinkDark text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-300">1</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Join Live & Clue Produk</h4>
+            <p class="text-xs text-gray-500 mt-1 leading-relaxed">Ikuti live TikTok <a href="https://www.tiktok.com/@pakeinaja" target="_blank" class="text-pinkCute font-semibold hover:underline">@pakeinaja</a>, tunggu host kasih clue nama cardigan yang mau di-order. Catat kode/nama produknya ya!</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkCute to-pinkDark text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-400">2</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Konfirmasi via WhatsApp</h4>
+            <p class="text-xs text-gray-500 mt-1 leading-relaxed">Chat ke WA <a href="https://wa.me/6281389945358" target="_blank" class="text-green-500 font-semibold hover:underline">081389945358</a> untuk konfirmasi produk yang mau di-order. Screenshot juga bisa!</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkCute to-pinkDark text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-500">3</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Pembayaran</h4>
+            <div class="mt-2 space-y-2">
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+                <span class="font-bold">💰 Order di atas Rp 30.000:</span>
+                <p class="mt-1">Wajib DP minimal <span class="font-bold text-pinkDark">Rp 10.000</span> untuk mengikat barang. Mau nambah? Wajib DP juga minimal Rp 10.000 per item ya, biar pisahin barangnya~</p>
+              </div>
+              <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs text-green-800">
+                <span class="font-bold">🛒 Order di bawah Rp 30.000:</span>
+                <p class="mt-1">Bisa langsung checkout lewat <span class="font-bold">Shopee</span> tanpa DP!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkCute to-pinkDark text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-600">4</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Opsi Pembayaran</h4>
+            <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
+                <span class="font-bold"><i class="fa-solid fa-credit-card text-blue-500"></i> Split Pay</span>
+                <p class="mt-1">Bayar bertahap, DP dulu sisanya nanti</p>
+              </div>
+              <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-xs text-purple-800">
+                <span class="font-bold"><i class="fa-solid fa-money-bill-transfer text-purple-500"></i> Full Transfer</span>
+                <p class="mt-1">Langsung bayar full sesuai harga cardigan</p>
+              </div>
+            </div>
+            <p class="text-[11px] text-gray-400 mt-2 italic">* Ongkir bisa checkout di Shopee via link Rp 1.000 yang akan dikirim via WA</p>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="flex gap-4">
+          <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-700">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-green-600 text-sm">Pesanan Diproses!</h4>
+            <p class="text-xs text-gray-500 mt-1">Setelah pembayaran dikonfirmasi, pesanan Kakak langsung diproses 🎉</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== CARD 2: Website PakeinAja ==================== -->
+    <div class="bg-white rounded-3xl shadow-lg border border-pinkSoft overflow-hidden mb-8 card-hover animate-fadeInRight delay-400">
+      <!-- Card Header -->
+      <div class="bg-gradient-to-r from-pinkDark to-pinkAccent p-5 relative overflow-hidden">
+        <div class="shimmer-bg absolute inset-0"></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-wiggle">
+            <i class="fa-solid fa-globe text-white text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">Order dari Website PAKEINAJA</h2>
+            <p class="text-pinkSoft text-xs">Untuk cardigan yang ada di katalog website</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="p-6 space-y-5">
+        <!-- Step 1 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkDark to-pinkCute text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-300">1</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Pilih Cardigan di Website</h4>
+            <p class="text-xs text-gray-500 mt-1 leading-relaxed">Browse katalog di <a href="/" class="text-pinkCute font-semibold hover:underline">halaman utama</a>, klik cardigan yang Kakak suka, lalu tekan tombol <span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px]">Beli via WA</span></p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkDark to-pinkCute text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-400">2</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Chat Otomatis via WhatsApp</h4>
+            <p class="text-xs text-gray-500 mt-1 leading-relaxed">Pesan otomatis akan terbuat dengan detail produk yang dipilih. Tinggal kirim dan tunggu konfirmasi dari admin!</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-4 step-line relative">
+          <div class="w-10 h-10 bg-gradient-to-br from-pinkDark to-pinkCute text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-500">3</div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-gray-800 text-sm">Pembayaran</h4>
+            <div class="mt-2 space-y-2">
+              <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-xs text-green-800">
+                <span class="font-bold">🛒 Di bawah Rp 30.000:</span>
+                <p class="mt-1">Langsung checkout via <span class="font-bold">Shopee</span></p>
+              </div>
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+                <span class="font-bold">💰 Di atas Rp 30.000:</span>
+                <p class="mt-1">Wajib DP minimal <span class="font-bold text-pinkDark">Rp 10.000</span> atau bisa langsung <span class="font-bold">full payment</span>. Ongkir checkout di Shopee via link Rp 1.000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex gap-4">
+          <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-md animate-bounceIn delay-600">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="flex-1 pt-1">
+            <h4 class="font-bold text-green-600 text-sm">Pesanan Diproses!</h4>
+            <p class="text-xs text-gray-500 mt-1">Pembayaran dikonfirmasi → pesanan Kakak langsung diproses dengan sayang 🌸</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== NOTE: Barang Rusak ==================== -->
+    <div class="note-card rounded-3xl p-5 border border-pinkCute/30 mb-6 card-hover animate-fadeInUp delay-500 relative overflow-hidden">
+      <div class="absolute top-3 right-3 text-3xl animate-sparkle">⚠️</div>
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 bg-red-100 rounded-2xl flex items-center justify-center flex-shrink-0 animate-wiggle">
+          <i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-red-600 text-sm mb-1">Note Penting!</h3>
+          <p class="text-xs text-gray-600 leading-relaxed">Kalau ada barang yang <span class="font-bold text-red-500">rusak, bolong, cacat, atau tidak sesuai</span> — langsung konfirmasi ke <a href="https://wa.me/6281389945358" target="_blank" class="text-green-500 font-bold hover:underline">WhatsApp</a> ya Kak. Nanti kita cari jalan tengah terbaik! Kita pasti tanggung jawab kok 🤝</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== NOTE: Shopee Admin Fee ==================== -->
+    <div class="bg-white rounded-3xl p-5 border border-orange-200 mb-6 card-hover animate-fadeInUp delay-550 relative overflow-hidden shadow-sm">
+      <div class="absolute top-3 right-3 text-3xl animate-float">🛒</div>
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0 animate-wiggle">
+          <i class="fa-solid fa-receipt text-orange-500 text-lg"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-bold text-orange-600 text-sm mb-2">Info Biaya Admin Shopee 💡</h3>
+          <div class="space-y-3">
+            <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-xs text-orange-800">
+              <span class="font-bold"><i class="fa-solid fa-cart-shopping text-orange-500"></i> Checkout langsung via Shopee:</span>
+              <p class="mt-1 leading-relaxed">Harga yang tertera <span class="font-bold">sudah termasuk pajak/biaya admin Shopee</span> ya Kak. Jadi harganya naik sedikit karena admin fee Shopee, bukan kita yang markup 🙏 Ini buat yang co langsung di Shopee.</p>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800">
+              <span class="font-bold"><i class="fa-solid fa-hand-holding-dollar text-emerald-500"></i> Full Payment (Transfer Langsung):</span>
+              <p class="mt-1 leading-relaxed">Kalau bayar full transfer ke kita, <span class="font-bold text-pinkDark">tidak ada biaya admin Shopee</span>! Jadi lebih hemat~ Cukup checkout ongkir aja di <span class="font-bold">link Rp 1.000</span> yang dikirim via WA. Biasanya cuma bayar <span class="font-bold text-emerald-600">Rp 0 - Rp 3.000</span> tergantung akun Shopee masing-masing ya Kak.</p>
+            </div>
+            <p class="text-[11px] text-gray-400 italic text-center">💖 Tips: Full transfer lebih hemat, co ongkir di link 1000 aja!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== FUN NOTE: Jam Sibuk ==================== -->
+    <div class="fun-note rounded-3xl p-5 border border-pinkCute/20 mb-8 card-hover animate-fadeInUp delay-600 relative overflow-hidden">
+      <div class="absolute top-3 right-3 text-3xl animate-float">🌙</div>
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 bg-yellow-100 rounded-2xl flex items-center justify-center flex-shrink-0 animate-bounce">
+          <span class="text-xl">🐻</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-pinkDark text-sm mb-1">Pssst... Info Dulu~</h3>
+          <p class="text-xs text-gray-600 leading-relaxed">Di luar jam live TikTok, host dan admin agak <span class="font-bold text-pinkDark">sibuk</span> jadi mohon dimaklumi ya Bestie 🥺 Balasan chat mungkin agak lama, tapi pasti dibalas kok! Makasih sudah sabar dan pengertian 🫶✨</p>
+          <div class="flex items-center gap-2 mt-3">
+            <span class="bg-pinkSoft text-pinkDark text-[10px] font-bold px-2 py-1 rounded-full">Jam Live: Tunggu pengumuman di TikTok</span>
+            <span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded-full">Reply: Secepatnya 🏃‍♀️</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="text-center animate-fadeInUp delay-700 mb-8">
+      <p class="text-sm text-gray-500 mb-3">Udah paham? Yuk langsung order! 🛒</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="/" class="bg-gradient-to-r from-pinkCute to-pinkDark text-white font-bold px-8 py-3 rounded-full shadow-lg hover:opacity-95 transition inline-flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-bag-shopping"></i> Lihat Koleksi Cardigan
+        </a>
+        <a href="https://wa.me/6281389945358?text=Halo%20Kak%20Pakeinaja%2C%20saya%20mau%20tanya%20tentang%20cara%20order" target="_blank" class="bg-green-500 text-white font-bold px-8 py-3 rounded-full shadow-lg hover:bg-green-600 transition inline-flex items-center gap-2 text-sm">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Chat Admin
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-pinkSoft">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <div class="flex flex-col items-center gap-3">
+        <div class="flex items-center gap-2">
+          <img src="pakein.jpg" alt="PAKEINAJA" class="w-6 h-6 rounded-lg object-cover shadow">
+          <h2 class="text-sm font-bold text-pinkDark">PAKEIN<span class="text-pinkCute">AJA</span></h2>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="https://wa.me/6281389945358" target="_blank" class="text-green-600 hover:text-green-700 transition text-sm">
+            <i class="fa-brands fa-whatsapp"></i> 081389945358
+          </a>
+          <a href="https://www.tiktok.com/@pakeinaja" target="_blank" class="text-gray-600 hover:text-pinkDark transition text-sm">
+            <i class="fa-brands fa-tiktok"></i> @pakeinaja
+          </a>
+        </div>
+        <p class="text-[11px] text-gray-400">&copy; 2026 PAKEINAJA. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

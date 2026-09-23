@@ -1,0 +1,17 @@
+{
+  "name": "pakein",
+  "version": "2.0.0",
+  "description": "Toko PAKEINAJA - static frontend + Vercel Functions + Vercel Blob (tanpa database)",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  }
+}
