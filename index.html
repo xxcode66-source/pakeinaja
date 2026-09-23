@@ -123,16 +123,6 @@
         <p class="text-xs text-gray-400 mt-1">Coba kata kunci lain ya Kak ✨</p>
       </div>
     </section>
-
-    <!-- Galeri Sudah Terjual (social proof) -->
-    <section id="soldSection" class="hidden mt-10">
-      <h3 class="text-lg font-bold text-gray-700 flex items-center gap-2 mb-3">
-        <span>Sudah Terjual</span> 🎀
-        <span id="soldBadgeCount" class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full"></span>
-      </h3>
-      <div id="soldGrid" class="flex gap-2 flex-wrap"></div>
-      <p class="text-[11px] text-gray-400 mt-3">Setiap cardigan cuma ada 1 — yang sudah terjual tidak di-restock, jadi buruan yang masih tersedia ya Kak 🌷</p>
-    </section>
   </main>
 
   <!-- Footer -->
@@ -583,25 +573,7 @@
     // Load produk saat halaman dimuat
     document.addEventListener('DOMContentLoaded', () => {
       loadProducts();
-      loadSoldGallery();
     });
-
-    // Galeri "Sudah Terjual" dari riwayat (tanpa gambar, hemat)
-    async function loadSoldGallery() {
-      try {
-        const res = await fetch(`${API_BASE}/sold`, { cache: 'no-store' });
-        const result = await res.json();
-        if (!result.success || !result.items.length) return;
-        document.getElementById('soldBadgeCount').innerText = result.total + ' pcs';
-        document.getElementById('soldGrid').innerHTML = result.items.map(h => `
-          <div class="bg-white border border-pinkSoft rounded-2xl px-3 py-2 shadow-sm">
-            <p class="text-xs font-semibold text-gray-600 line-through decoration-pinkCute/70 decoration-2 truncate max-w-[160px]">${h.name}</p>
-            <p class="text-[10px] text-gray-400">${new Date(h.soldAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} · <span class="text-green-600 font-medium">${formatPrice(h.price)}</span></p>
-          </div>
-        `).join('');
-        document.getElementById('soldSection').classList.remove('hidden');
-      } catch (e) {}
-    }
   </script>
 </body>
 </html>

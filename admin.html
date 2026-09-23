@@ -159,6 +159,21 @@
   <!-- Toast -->
   <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-5 py-2.5 rounded-full shadow-xl opacity-0 pointer-events-none transition z-50"></div>
 
+  <!-- Modal konfirmasi -->
+  <div id="confirmModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl" onclick="event.stopPropagation()">
+      <div id="cmIcon" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-100">
+        <i class="fa-solid fa-check text-green-600 text-2xl"></i>
+      </div>
+      <h3 id="cmTitle" class="text-lg font-bold text-gray-800 text-center">Konfirmasi</h3>
+      <p id="cmBody" class="text-sm text-gray-500 text-center mt-2 leading-relaxed"></p>
+      <div class="flex gap-2 mt-6">
+        <button id="cmCancel" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl transition">Batal</button>
+        <button id="cmOk" class="flex-1 text-sm font-semibold py-2.5 rounded-xl transition text-white bg-green-600 hover:bg-green-700">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API = '/api';
     let TOKEN_KEY = 'pakein_admin_token';
@@ -166,6 +181,9 @@
     let allProducts = [];
     let currentStats = { soldCount: 0, revenue: 0, soldHistory: [] };
     let pendingImages = []; // { url, name }
+    const PAGE_SIZE = 10;
+    let prodPage = 1;
+    let histPage = 1;
 
     const $ = id => document.getElementById(id);
     const rupiah = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
@@ -177,6 +195,29 @@
       t.style.background = ok ? '' : '#dc2626';
       t.style.opacity = '1';
       setTimeout(() => t.style.opacity = '0', 2500);
+    }
+
+    // ---------- Modal konfirmasi ----------
+    function confirmAction({ title, body, okText = 'Ya, Lanjutkan', danger = false, icon = 'fa-check' }) {
+      return new Promise(resolve => {
+        $('cmTitle').textContent = title;
+        $('cmBody').innerHTML = body;
+        const okBtn = $('cmOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'flex-1 text-sm font-semibold py-2.5 rounded-xl transition text-white ' + (danger ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-700');
+        $('cmIcon').className = 'w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ' + (danger ? 'bg-red-50' : 'bg-green-100');
+        $('cmIcon').innerHTML = `<i class="fa-solid ${icon} ${danger ? 'text-red-500' : 'text-green-600'} text-2xl"></i>`;
+        const modal = $('confirmModal');
+        modal.classList.remove('hidden');
+        const close = (val) => {
+          modal.classList.add('hidden');
+          $('cmOk').onclick = $('cmCancel').onclick = modal.onclick = null;
+          resolve(val);
+        };
+        $('cmOk').onclick = () => close(true);
+        $('cmCancel').onclick = () => close(false);
+        modal.onclick = (e) => { if (e.target === modal) close(false); };
+      });
     }
 
     // ---------- Auth ----------
@@ -215,6 +256,7 @@
         if (!result.success) return false;
         allProducts = result.products || [];
         currentStats = result.stats || currentStats;
+        histPage = 1;
         renderAll();
         return true;
       } catch (e) {
@@ -230,10 +272,15 @@
       $('histRevenue').textContent = rupiah(currentStats.revenue);
       $('listCount').textContent = `(${allProducts.length})`;
 
+      // --- daftar barang (pagination per 10) ---
+      const totalProdPages = Math.max(1, Math.ceil(allProducts.length / PAGE_SIZE));
+      prodPage = Math.min(prodPage, totalProdPages);
+      const start = (prodPage - 1) * PAGE_SIZE;
+      const pageItems = allProducts.slice(start, start + PAGE_SIZE);
       $('productList').innerHTML = allProducts.length === 0
         ? '<p class="text-sm text-gray-400">Belum ada barang. Tambah di form atas ya.</p>'
-        : allProducts.map(p => `
-          <div class="flex items-center gap-3 border border-pinkSoft/60 rounded-2xl p-2.5">
+        : pageItems.map((p, i) => `
+          <div class="flex items-center gap-3 border border-pinkSoft/60 rounded-2xl p-2.5 hover:border-pinkCute transition bg-white">
             <img src="${(p.images && p.images[0]) || ''}" onerror="this.style.visibility='hidden'" class="w-14 h-14 rounded-xl object-cover bg-pinkSoft/30 flex-shrink-0">
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-sm text-gray-800 truncate">${p.name}</p>
@@ -246,18 +293,56 @@
               <button onclick="deleteProduct(${p.id})" class="text-xs bg-red-50 hover:text-red-600 text-red-500 px-3 py-1.5 rounded-lg">Hapus</button>
             </div>
           </div>
-        `).join('');
+        `).join('') + pagerHtml(start, allProducts.length, prodPage, totalProdPages, 'goProdPage');
 
+      // --- riwayat terjual (pagination per 10, tampilan kartu harian) ---
       const hist = currentStats.soldHistory || [];
+      const totalHistPages = Math.max(1, Math.ceil(hist.length / PAGE_SIZE));
+      histPage = Math.min(histPage, totalHistPages);
+      const hStart = (histPage - 1) * PAGE_SIZE;
       $('histList').innerHTML = hist.length === 0
         ? '<p class="text-sm text-gray-400">Belum ada yang terjual.</p>'
-        : hist.map(h => `
-          <div class="flex items-center justify-between text-sm py-1.5 border-b border-pinkSoft/40 last:border-0">
-            <span class="text-gray-700 truncate">${h.name}</span>
-            <span class="text-gray-400 text-xs flex-shrink-0 ml-3">${new Date(h.soldAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} · <b class="text-green-600">${rupiah(h.price)}</b></span>
-          </div>
-        `).join('');
+        : `<div class="space-y-2">` + hist.slice(hStart, hStart + PAGE_SIZE).map((h, i) => {
+            const d = new Date(h.soldAt);
+            return `
+          <div class="flex items-center gap-3 bg-pinkSoft/20 hover:bg-pinkSoft/40 transition border border-pinkSoft/50 rounded-xl px-3 py-2.5">
+            <div class="w-9 h-9 rounded-xl bg-white border border-pinkSoft flex flex-col items-center justify-center flex-shrink-0">
+              <span class="text-[11px] font-bold text-pinkDark leading-none">${d.toLocaleDateString('id-ID', { day: '2-digit' })}</span>
+              <span class="text-[8px] text-gray-400 uppercase leading-none mt-0.5">${d.toLocaleDateString('id-ID', { month: 'short' })}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-gray-700 truncate">${h.name}</p>
+              <p class="text-[10px] text-gray-400">${d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · ${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+            </div>
+            <span class="text-xs font-bold text-green-600 bg-green-50 border border-green-100 px-2.5 py-1 rounded-full flex-shrink-0">+${rupiah(h.price)}</span>
+          </div>`;
+          }).join('') + `</div>` + pagerHtml(hStart, hist.length, histPage, totalHistPages, 'goHistPage');
     }
+
+    // Helper pagination: nomor halaman + tombol prev/next
+    function pagerHtml(shownCount, total, page, totalPages, fn) {
+      if (total <= PAGE_SIZE) return '';
+      const btn = (n, label = n, active = false, disabled = false) =>
+        `<button ${disabled ? 'disabled' : `onclick="${fn}(${n})"`} class="min-w-[30px] h-[30px] px-1.5 rounded-lg text-xs font-semibold transition ${
+          active ? 'bg-pinkDark text-white shadow' : disabled ? 'text-gray-300 cursor-not-allowed' : 'bg-white border border-pinkSoft text-gray-500 hover:border-pinkCute hover:text-pinkDark'
+        }">${label}</button>`;
+      const nums = [];
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) nums.push(i);
+        else if (nums[nums.length - 1] !== '…') nums.push('…');
+      }
+      return `
+        <div class="flex items-center justify-between mt-4 pt-3 border-t border-pinkSoft/50">
+          <p class="text-[11px] text-gray-400">Halaman ${page} / ${totalPages} · total ${total}</p>
+          <div class="flex items-center gap-1.5">
+            ${btn(page - 1, '<i class="fa-solid fa-chevron-left"></i>', false, page === 1)}
+            ${nums.map(n => n === '…' ? '<span class="text-xs text-gray-400 px-0.5">…</span>' : btn(n, n, n === page)).join('')}
+            ${btn(page + 1, '<i class="fa-solid fa-chevron-right"></i>', false, page === totalPages)}
+          </div>
+        </div>`;
+    }
+    function goProdPage(n) { prodPage = n; renderAll(); $('productList').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    function goHistPage(n) { histPage = n; renderAll(); }
 
     // ---------- Upload gambar (kompres otomatis di browser) ----------
     // Resize maks 1200px + JPEG ~82% → loading cepat & kuota Blob awet.
@@ -402,7 +487,12 @@
     async function markSold(id) {
       const p = allProducts.find(x => x.id === id);
       if (!p) return;
-      if (!confirm(`Tandai "${p.name}" TERJUAL?\n\nBarang akan hilang dari etalase, hitungan kejual +1, dan omzet bertambah ${rupiah(p.price)}.`)) return;
+      const ok = await confirmAction({
+        title: 'Tandai Terjual?',
+        body: `<b>"${p.name}"</b> akan hilang dari etalase, hitungan kejual +1, dan omzet bertambah <b class="text-green-600">${rupiah(p.price)}</b>.`,
+        okText: 'Ya, Terjual', danger: false, icon: 'fa-check',
+      });
+      if (!ok) return;
       try {
         const res = await fetch(`${API}/admin/sell`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ id }) });
         const result = await res.json();
@@ -417,7 +507,12 @@
     async function deleteProduct(id) {
       const p = allProducts.find(x => x.id === id);
       if (!p) return;
-      if (!confirm(`Hapus "${p.name}" TANPA tercatat terjual? (tidak menambah hitungan/omzet)`)) return;
+      const ok = await confirmAction({
+        title: 'Hapus Barang?',
+        body: `<b>"${p.name}"</b> dihapus permanen <b>tanpa</b> tercatat terjual. Gambar & video ikut terhapus dari penyimpanan.`,
+        okText: 'Hapus', danger: true, icon: 'fa-trash',
+      });
+      if (!ok) return;
       try {
         const res = await fetch(`${API}/admin/products/${id}`, { method: 'DELETE', headers: authHeaders() });
         const result = await res.json();
@@ -436,7 +531,12 @@
     }
 
     async function clearHistory() {
-      if (!confirm('PENTING: Reset hitungan kejual & omzet ke NOL dan kosongkan riwayat?\nData barang aktif tidak terpengaruh.')) return;
+      const ok = await confirmAction({
+        title: 'Reset Riwayat & Hitungan?',
+        body: 'PENTING: Hitungan kejual & omzet kembali ke <b class="text-red-500">NOL</b> dan riwayat dikosongkan. Data barang aktif tidak terpengaruh.',
+        okText: 'Reset', danger: true, icon: 'fa-rotate-left',
+      });
+      if (!ok) return;
       // Simpan ulang via endpoint khusus? Tidak ada — reuse sell pattern tidak cocok.
       // Solusi ringan: kirimi PATCH katalog via /api/admin/stats
       try {
