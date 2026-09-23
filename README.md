@@ -47,4 +47,6 @@ npm run dev      # vercel dev → http://localhost:3000
 - Counter pengunjung & wishlist server-side dihapus karena tidak cocok dengan serverless.
 
 ## File Lama
-`pakein.html`, `products_editor.html`, dan `data/` adalah sisa versi lama — tidak dipakai oleh API baru, boleh dihapus kapan saja.
+- `data/` — sisa backend lama (contoh produk & visitor), tidak dipakai API baru.
+- `image-preview-modal.css`, `tailwind.config.js`, `postcss.config.js` — peninggalan versi lama, tidak direferensikan halaman aktif.
+- Folder `public/` lama sudah dipindah ke `_legacy/` (hanya di lokal, di-gitignore) — simpanan foto-foto upload versi lama.
