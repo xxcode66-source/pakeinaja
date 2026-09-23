@@ -109,10 +109,6 @@
             </div>
           </div>
           <div>
-            <label class="text-xs text-gray-500">Bahan</label>
-            <input id="fMaterial" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Misal: Cotton Knit">
-          </div>
-          <div>
             <label class="text-xs text-gray-500">Video (opsional, URL)</label>
             <input id="fVideo" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="https://... .mp4">
           </div>
@@ -241,7 +237,7 @@
             <img src="${(p.images && p.images[0]) || ''}" onerror="this.style.visibility='hidden'" class="w-14 h-14 rounded-xl object-cover bg-pinkSoft/30 flex-shrink-0">
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-sm text-gray-800 truncate">${p.name}</p>
-              <p class="text-xs text-gray-400">${p.material || '-'} ${p.badge ? '· <span class="text-pinkDark font-medium">' + p.badge + '</span>' : ''}</p>
+              <p class="text-xs text-gray-400">${p.badge ? '<span class="text-pinkDark font-medium">' + p.badge + '</span>' : ''}</p>
               <p class="text-sm font-bold text-pinkDark">${rupiah(p.price)}${p.priceOld > p.price ? ' <span class="text-[10px] font-medium text-gray-400 line-through">' + rupiah(p.priceOld) + '</span>' : ''}</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
@@ -285,12 +281,21 @@
       }
     }
 
+    let uploadingCount = 0;
+    function refreshSaveBtn() {
+      const btn = $('btnSave');
+      btn.disabled = uploadingCount > 0;
+      btn.classList.toggle('opacity-50', uploadingCount > 0);
+      btn.classList.toggle('cursor-not-allowed', uploadingCount > 0);
+    }
+
     async function uploadFiles(fileList) {
       const status = $('uploadStatus');
       for (const file of fileList) {
         if (pendingImages.length >= 8) { toast('Maks 8 foto', false); break; }
         status.classList.remove('hidden');
-        status.textContent = `Mengoptimalkan & upload ${file.name}...`;
+        status.textContent = `Mengoptimalkan & upload ${file.name} (${uploadingCount + 1}/${fileList.length})...`;
+        uploadingCount++; refreshSaveBtn();
         const payload = await compressImage(file);
         try {
           const res = await fetch(`${API}/admin/upload`, {
@@ -306,10 +311,13 @@
           }
         } catch (e) {
           toast(`${file.name}: gagal upload`, false);
+        } finally {
+          uploadingCount--; refreshSaveBtn();
         }
       }
       status.classList.add('hidden');
       renderImgPreviews();
+      if (pendingImages.length) toast(`${pendingImages.length} foto siap ✓`);
     }
 
     function renderImgPreviews() {
@@ -329,22 +337,26 @@
 
     // ---------- CRUD ----------
     async function saveProduct() {
+      if (uploadingCount > 0) return toast('Tunggu sebentar, foto masih diupload...', false);
       const name = $('fName').value.trim();
       const price = Number($('fPrice').value);
       if (!name) return toast('Nama barang wajib diisi', false);
       if (!price) return toast('Harga wajib diisi', false);
 
+      const editId = $('editId').value;
       const payload = {
         name, price,
         priceOld: Number($('fPriceOld').value) || null,
-        material: $('fMaterial').value.trim(),
         description: $('fDesc').value.trim(),
         badge: $('fBadge').value,
         video: $('fVideo').value.trim() || null,
         images: pendingImages.map(i => i.url),
       };
-
-      const editId = $('editId').value;
+      // kalau edit, bersih-bersih field lama yang sudah tidak dipakai (misal material)
+      if (editId) {
+        const old = allProducts.find(x => String(x.id) === editId) || {};
+        Object.keys(old).forEach(k => { if (!(k in payload) && !['id', 'createdAt', 'rating'].includes(k)) payload[k] = null; });
+      }
       $('btnSave').disabled = true;
       try {
         const url = editId ? `${API}/admin/products/${editId}` : `${API}/admin/products`;
@@ -368,7 +380,6 @@
       $('fName').value = p.name || '';
       $('fPrice').value = p.price || '';
       $('fPriceOld').value = p.priceOld || '';
-      $('fMaterial').value = p.material || '';
       $('fDesc').value = p.description || '';
       $('fBadge').value = p.badge || '';
       $('fVideo').value = p.video || '';
@@ -380,7 +391,7 @@
 
     function resetForm() {
       $('editId').value = '';
-      ['fName', 'fPrice', 'fPriceOld', 'fMaterial', 'fDesc', 'fVideo'].forEach(id => $(id).value = '');
+      ['fName', 'fPrice', 'fPriceOld', 'fDesc', 'fVideo'].forEach(id => $(id).value = '');
       $('fBadge').value = '';
       $('fImages').value = '';
       pendingImages = [];

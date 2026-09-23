@@ -22,14 +22,14 @@ export default async function handler(req, res) {
     if (search) {
       const q = String(search).toLowerCase();
       data = data.filter(p =>
-        [p.name, p.material, p.description].some(f => String(f || '').toLowerCase().includes(q))
+        [p.name, p.description].some(f => String(f || '').toLowerCase().includes(q))
       );
     }
     if (range && PRICE_RANGES[range]) {
       data = data.filter(PRICE_RANGES[range]);
     }
 
-    res.setHeader('Cache-Control', 'public, max-age=20');
+    res.setHeader('Cache-Control', 'no-store'); // data harus selalu segar (perubahan admin langsung tampil)
     return res.json({ success: true, count: data.length, data });
   } catch (err) {
     console.error('products handler failed:', err);

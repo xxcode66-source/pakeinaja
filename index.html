@@ -316,7 +316,6 @@
               ${p.images && p.images.length > 1 ? `<span class="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-images"></i> ${p.images.length}</span>` : ''}
             </div>
             <h4 class="font-semibold text-sm text-gray-800 line-clamp-1">${p.name}</h4>
-            <p class="text-xs text-gray-400 mb-1">${p.material}</p>
             <div class="flex items-center justify-between mt-2">
               <span class="font-bold text-pinkDark text-sm">${formatPrice(p.price)}${p.priceOld > p.price ? `<span class="text-[10px] font-medium text-gray-400 line-through ml-1">${formatPrice(p.priceOld)}</span>` : ''}</span>
               <span class="text-[11px] text-amber-500 font-medium"><i class="fa-solid fa-star"></i> ${p.rating}</span>
@@ -378,7 +377,7 @@
         if (search) url += `&search=${encodeURIComponent(search)}`;
         if (priceRange) url += `&price_range=${priceRange}`;
 
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: 'no-store' });
         const result = await res.json();
         if (result.success) {
           loadedProducts = result.data;
@@ -590,7 +589,7 @@
     // Galeri "Sudah Terjual" dari riwayat (tanpa gambar, hemat)
     async function loadSoldGallery() {
       try {
-        const res = await fetch(`${API_BASE}/sold`);
+        const res = await fetch(`${API_BASE}/sold`, { cache: 'no-store' });
         const result = await res.json();
         if (!result.success || !result.items.length) return;
         document.getElementById('soldBadgeCount').innerText = result.total + ' pcs';

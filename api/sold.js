@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   try {
     const catalog = await readCatalog();
     const limit = Math.min(Number(req.query?.limit) || 24, 100);
-    res.setHeader('Cache-Control', 'public, max-age=60');
+    res.setHeader('Cache-Control', 'no-store');
     return res.json({
       success: true,
       total: catalog.stats.soldCount || 0,
