@@ -4,20 +4,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Dev (nodemon)",
+      "name": "Dev (vercel dev)",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "console": "integratedTerminal",
-      "restart": true,
-      "envFile": "${workspaceFolder}/.env"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Start",
-      "program": "${workspaceFolder}/server.js",
-      "console": "integratedTerminal",
-      "envFile": "${workspaceFolder}/.env"
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

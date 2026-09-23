@@ -46,7 +46,5 @@ npm run dev      # vercel dev → http://localhost:3000
 - Riwayat terjual dibatasi 500 entri terakhir (hitungan & omzet tetap akurat).
 - Counter pengunjung & wishlist server-side dihapus karena tidak cocok dengan serverless.
 
-## File Lama
-- `data/` — sisa backend lama (contoh produk & visitor), tidak dipakai API baru.
-- `image-preview-modal.css`, `tailwind.config.js`, `postcss.config.js` — peninggalan versi lama, tidak direferensikan halaman aktif.
-- Folder `public/` lama sudah dipindah ke `_legacy/` (hanya di lokal, di-gitignore) — simpanan foto-foto upload versi lama.
+## Catatan Sisa Versi Lama
+Sudah dibersihkan dari repo: backend Express (`src/`), `server.js`, folder `public/`, `pakein.html`, `products_editor.html`, `data/`, config Tailwind/PostCSS lokal. Cadangan lokal (foto upload lama) ada di `_legacy/` — tidak masuk git/deploy. Halaman aktif: `index.html`, `admin.html`, `how-to-order.html`.
