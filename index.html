@@ -58,7 +58,7 @@
 
       <!-- User Icons -->
       <div class="flex items-center gap-4 text-pinkDark text-lg">
-        <a href="/how-to-order.html" class="text-sm text-pinkDark font-semibold bg-pinkSoft px-3 py-1.5 rounded-full hover:bg-pinkCute hover:text-white transition inline-flex items-center gap-1">
+        <a href="/how-to-order" class="text-sm text-pinkDark font-semibold bg-pinkSoft px-3 py-1.5 rounded-full hover:bg-pinkCute hover:text-white transition inline-flex items-center gap-1">
           <i class="fa-solid fa-bag-shopping text-xs"></i> <span class="hidden sm:inline">Cara Order</span><span class="sm:hidden">Order</span>
         </a>
       </div>
@@ -88,7 +88,7 @@
 
     <!-- Mobile: Cara Order Button -->
     <div class="md:hidden mb-4">
-      <a href="/how-to-order.html" class="block text-center bg-gradient-to-r from-pinkCute to-pinkDark text-white font-bold py-2.5 rounded-2xl text-sm shadow-md hover:opacity-95 transition">
+      <a href="/how-to-order" class="block text-center bg-gradient-to-r from-pinkCute to-pinkDark text-white font-bold py-2.5 rounded-2xl text-sm shadow-md hover:opacity-95 transition">
         <i class="fa-solid fa-bag-shopping mr-1"></i> Cara Order di PAKEINAJA
       </a>
     </div>
@@ -574,6 +574,17 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadProducts();
     });
+  </script>
+
+  <!-- Deterrent ringan anti-inspeksi (lihat catatan: bukan keamanan sejati) -->
+  <script>
+    document.addEventListener('contextmenu', e => { if (!e.target.closest('a,input,textarea,select')) e.preventDefault(); });
+    document.addEventListener('keydown', e => {
+      const k = (e.key || '').toUpperCase();
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && k === 'U')) { e.preventDefault(); return false; }
+    });
+    document.addEventListener('selectstart', e => { if (!e.target.closest('input,textarea')) e.preventDefault(); });
+    document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
   </script>
 </body>
 </html>

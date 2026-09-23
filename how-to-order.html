@@ -131,7 +131,7 @@
         <a href="/" class="text-sm text-gray-500 hover:text-pinkDark transition font-medium">
           <i class="fa-solid fa-house mr-1"></i> Home
         </a>
-        <a href="/how-to-order.html" class="text-sm text-pinkDark font-semibold bg-pinkSoft px-3 py-1.5 rounded-full">
+        <a href="/how-to-order" class="text-sm text-pinkDark font-semibold bg-pinkSoft px-3 py-1.5 rounded-full">
           <i class="fa-solid fa-bag-shopping mr-1"></i> Cara Order
         </a>
       </nav>
@@ -346,6 +346,7 @@
                   <div class="min-w-0">
                     <p class="text-[10px] text-sky-600 font-bold uppercase">DANA</p>
                     <p class="text-sm font-bold text-gray-800 tracking-wide">081389945358</p>
+                    <p class="text-[10px] text-gray-500">a.n. <b>Siti Marlina</b></p>
                   </div>
                 </div>
                 <button onclick="copyNum('081389945358', this)" class="text-xs bg-white border border-sky-200 text-sky-600 hover:bg-sky-100 font-semibold px-3 py-1.5 rounded-lg transition flex-shrink-0"><i class="fa-regular fa-copy"></i> Salin</button>
@@ -359,6 +360,7 @@
                   <div class="min-w-0">
                     <p class="text-[10px] text-orange-600 font-bold uppercase">ShopeePay</p>
                     <p class="text-sm font-bold text-gray-800 tracking-wide">081389945358</p>
+                    <p class="text-[10px] text-gray-500">a.n. <b>Siti Marlina</b></p>
                   </div>
                 </div>
                 <button onclick="copyNum('081389945358', this)" class="text-xs bg-white border border-orange-200 text-orange-600 hover:bg-orange-100 font-semibold px-3 py-1.5 rounded-lg transition flex-shrink-0"><i class="fa-regular fa-copy"></i> Salin</button>
@@ -477,6 +479,15 @@
         prompt('Salin nomor ini:', num);
       }
     }
+
+    // Deterrent ringan anti-inspeksi (bukan keamanan sejati)
+    document.addEventListener('contextmenu', e => { if (!e.target.closest('a,input,textarea,select')) e.preventDefault(); });
+    document.addEventListener('keydown', e => {
+      const k = (e.key || '').toUpperCase();
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && k === 'U')) { e.preventDefault(); return false; }
+    });
+    document.addEventListener('selectstart', e => { if (!e.target.closest('input,textarea')) e.preventDefault(); });
+    document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
   </script>
 </body>
 </html>
