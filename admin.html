@@ -622,10 +622,8 @@
       if (!ok) return;
       try {
         const res = await fetch(`${API}/admin/products/${id}`, { method: 'DELETE', headers: authHeaders() });
-        const txt = await res.text();
-        let result; try { result = JSON.parse(txt); } catch { result = { success: false, error: 'Non-JSON respons: ' + txt } }
-        console.error('[pakein] DELETE HTTP', res.status, '->', result);
-        if (!result.success) throw new Error('HTTP ' + res.status + ': ' + (result.error || 'Gagal'));
+        const result = await res.json().catch(() => ({ success: false, error: 'Respons server tidak valid' }));
+        if (!result.success) throw new Error(result.error || 'Gagal');
         toast('Barang dihapus');
         await loadAll();
       } catch (e) {

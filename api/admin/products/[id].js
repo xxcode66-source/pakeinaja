@@ -3,11 +3,18 @@
 import { readCatalogStrict, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../../lib/store.js';
 import { sanitizeProduct } from '../../../lib/validate.js';
 
+// Ambil id rute dengan aman: Vercel bisa menaruhnya di req.params, req.query, atau hanya di URL.
+function parseId(req) {
+  const fromCtx = [req.params?.id, req.query?.id].find(v => v !== undefined && v !== null && v !== '');
+  const raw = fromCtx ?? String(req.url || '').split('?')[0].split('/').filter(Boolean).pop();
+  return Number(raw);
+}
+
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const id = Number(req.params.id);
+    const id = parseId(req);
     const catalog = await readCatalogStrict();
     const idx = catalog.products.findIndex(p => Number(p.id) === id);
     if (idx === -1) return res.status(404).json({ success: false, error: 'Barang tidak ditemukan' });
@@ -32,7 +39,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   } catch (err) {
     console.error('admin/products/[id] failed:', err);
-    const info = [err?.name, err?.code, err?.statusCode, err?.message].filter(Boolean).join(' | ');
-    return res.status(503).json({ success: false, error: 'DEBUG: ' + (info || String(err)) + ' — katalog tidak diubah.' });
+    return res.status(503).json({ success: false, error: 'Gagal memproses. Katalog tidak diubah demi keamanan data — coba lagi.' });
   }
 }
