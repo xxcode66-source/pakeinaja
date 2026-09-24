@@ -1,7 +1,7 @@
 // /api/admin/products/:id — PATCH: edit barang, DELETE: hapus barang
 // Gambar/video yang diganti/dihapus ikut dihapus dari Blob (storage tetap hemat)
-import { readCatalogStrict, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../lib/store.js';
-import { sanitizeProduct } from '../../lib/validate.js';
+import { readCatalogStrict, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../../lib/store.js';
+import { sanitizeProduct } from '../../../lib/validate.js';
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
