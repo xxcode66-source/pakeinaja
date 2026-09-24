@@ -32,6 +32,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   } catch (err) {
     console.error('admin/products/[id] failed:', err);
-    return res.status(503).json({ success: false, error: 'Gagal memproses. Katalog tidak diubah demi keamanan data — coba lagi.' });
+    const info = [err?.name, err?.code, err?.statusCode, err?.message].filter(Boolean).join(' | ');
+    return res.status(503).json({ success: false, error: 'DEBUG: ' + (info || String(err)) + ' — katalog tidak diubah.' });
   }
 }
