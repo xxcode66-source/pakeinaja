@@ -1,6 +1,6 @@
 // POST /api/admin/sell — tandai barang terjual:
 // barang hilang dari etalase, counter +1, omzet bertambah, media blob dibersihkan
-import { readCatalog, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../lib/store.js';
+import { readCatalogStrict, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../lib/store.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed' });
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     const id = Number(req.body?.id);
     if (!id) return res.status(400).json({ success: false, error: 'id wajib diisi' });
 
-    const catalog = await readCatalog();
+    const catalog = await readCatalogStrict();
     const idx = catalog.products.findIndex(p => Number(p.id) === id);
     if (idx === -1) return res.status(404).json({ success: false, error: 'Barang tidak ditemukan' });
 
@@ -27,6 +27,6 @@ export default async function handler(req, res) {
     return res.json({ success: true, stats: catalog.stats });
   } catch (err) {
     console.error('admin/sell failed:', err);
-    return res.status(500).json({ success: false, error: 'Terjadi kesalahan di server' });
+    return res.status(503).json({ success: false, error: 'Gagal memproses. Katalog tidak diubah demi keamanan data — coba lagi.' });
   }
 }

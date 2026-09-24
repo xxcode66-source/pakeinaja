@@ -1,6 +1,6 @@
 // /api/admin/products/:id — PATCH: edit barang, DELETE: hapus barang
 // Gambar/video yang diganti/dihapus ikut dihapus dari Blob (storage tetap hemat)
-import { readCatalog, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../lib/store.js';
+import { readCatalogStrict, writeCatalog, requireAdmin, deleteBlobs, mediaUrlsOf } from '../../lib/store.js';
 import { sanitizeProduct } from '../../lib/validate.js';
 
 export default async function handler(req, res) {
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
   try {
     const id = Number(req.params.id);
-    const catalog = await readCatalog();
+    const catalog = await readCatalogStrict();
     const idx = catalog.products.findIndex(p => Number(p.id) === id);
     if (idx === -1) return res.status(404).json({ success: false, error: 'Barang tidak ditemukan' });
     const old = catalog.products[idx];
@@ -32,6 +32,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   } catch (err) {
     console.error('admin/products/[id] failed:', err);
-    return res.status(500).json({ success: false, error: 'Terjadi kesalahan di server' });
+    return res.status(503).json({ success: false, error: 'Gagal memproses. Katalog tidak diubah demi keamanan data — coba lagi.' });
   }
 }

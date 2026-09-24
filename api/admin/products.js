@@ -1,12 +1,12 @@
 // /api/admin/products — GET: daftar penuh + statistik, POST: tambah barang
-import { readCatalog, writeCatalog, requireAdmin } from '../../lib/store.js';
+import { readCatalogStrict, writeCatalog, requireAdmin } from '../../lib/store.js';
 import { sanitizeProduct } from '../../lib/validate.js';
 
 export default async function handler(req, res) {
   if (!requireAdmin(req, res)) return;
 
   try {
-    const catalog = await readCatalog();
+    const catalog = await readCatalogStrict();
 
     if (req.method === 'GET') {
       return res.json({ success: true, products: catalog.products, stats: catalog.stats });
@@ -24,6 +24,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   } catch (err) {
     console.error('admin/products failed:', err);
-    return res.status(500).json({ success: false, error: 'Terjadi kesalahan di server' });
+    return res.status(503).json({ success: false, error: 'Gagal memproses. Katalog tidak diubah demi keamanan data — coba lagi.' });
   }
 }

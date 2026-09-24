@@ -54,6 +54,7 @@
           <span class="font-bold text-gray-800">PAKEINAJA <span class="text-xs font-medium text-gray-400">admin</span></span>
         </div>
         <div class="flex items-center gap-2">
+          <button onclick="doBackup()" class="text-xs bg-pinkSoft hover:bg-pinkCute hover:text-white text-pinkDark px-3 py-1.5 rounded-full font-semibold transition"><i class="fa-solid fa-download"></i> Backup</button>
           <a href="/" class="text-xs text-gray-500 hover:text-pinkDark"><i class="fa-solid fa-store"></i> Lihat Toko</a>
           <button onclick="doLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-full">Keluar</button>
         </div>
@@ -262,6 +263,25 @@
     function showDash() {
       $('loginView').classList.add('hidden');
       $('dashView').classList.remove('hidden-admin');
+    }
+
+    // ---------- Backup / Export ----------
+    async function doBackup() {
+      try {
+        const res = await fetch(`${API}/admin/export`, { headers: { 'Authorization': 'Bearer ' + token }, cache: 'no-store' });
+        if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Gagal membuat backup'); }
+        const data = await res.json();
+        const stamp = String(data.exportedAt || new Date().toISOString()).slice(0, 10);
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `pakeinaja-backup-${stamp}.json`;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        toast(`Backup ${data.products?.length ?? 0} barang terunduh ✓`);
+      } catch (err) {
+        toast(err.message || 'Backup gagal', false);
+      }
     }
 
     // ---------- Data ----------
