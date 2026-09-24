@@ -1,4 +1,4 @@
-// GET /api/products?search=&price_range= — etalase publik (index.html)
+// GET /api/products?search=&price_range=&type= — etalase publik (index.html)
 import { readCatalog } from '../lib/store.js';
 
 const PRICE_RANGES = {
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
   try {
     const catalog = await readCatalog();
-    const { search = '', price_range: range = '' } = req.query || {};
+    const { search = '', price_range: range = '', type = '' } = req.query || {};
 
     let data = catalog.products.slice().sort((a, b) =>
       String(b.createdAt || '').localeCompare(String(a.createdAt || ''))
@@ -27,6 +27,12 @@ export default async function handler(req, res) {
     }
     if (range && PRICE_RANGES[range]) {
       data = data.filter(PRICE_RANGES[range]);
+    }
+    // Filter tipe: 'bundle' = hanya bundle, 'single' = hanya satuan (bukan bundle)
+    if (type === 'bundle') {
+      data = data.filter(p => p.type === 'bundle');
+    } else if (type === 'single') {
+      data = data.filter(p => p.type !== 'bundle');
     }
 
     res.setHeader('Cache-Control', 'no-store'); // data harus selalu segar (perubahan admin langsung tampil)

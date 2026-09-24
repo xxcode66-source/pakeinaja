@@ -37,6 +37,10 @@
       }
     }
   </script>
+  <style>
+    /* Tombol filter aktif: ring pink biar jelas mana yang dipilih */
+    .active-filter { box-shadow: 0 0 0 2px #FB6F92, 0 0 0 4px rgba(251, 143, 171, .35) !important; font-weight: 700; }
+  </style>
 </head>
 <body class="bg-[#FFF0F5] font-poppins text-gray-700">
 
@@ -105,6 +109,7 @@
           <button onclick="filterPrice('murce')" id="filterMurce" class="price-filter-btn text-xs bg-green-50 text-green-600 font-semibold px-3 py-1.5 rounded-full hover:bg-green-500 hover:text-white transition">💰 Murce</button>
           <button onclick="filterPrice('medium')" id="filterMedium" class="price-filter-btn text-xs bg-blue-50 text-blue-600 font-semibold px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition">⭐ Medium</button>
           <button onclick="filterPrice('premi')" id="filterPremi" class="price-filter-btn text-xs bg-purple-50 text-purple-600 font-semibold px-3 py-1.5 rounded-full hover:bg-purple-500 hover:text-white transition">💎 Premi</button>
+          <button onclick="filterPrice('bundle')" id="filterBundle" class="price-filter-btn text-xs bg-amber-50 text-amber-600 font-semibold px-3 py-1.5 rounded-full hover:bg-amber-400 hover:text-white transition">🎁 Bundle</button>
         </div>
       </div>
 
@@ -356,6 +361,8 @@
         document.getElementById('filterMedium').classList.add('active-filter');
       } else if (range === 'premi') {
         document.getElementById('filterPremi').classList.add('active-filter');
+      } else if (range === 'bundle') {
+        document.getElementById('filterBundle').classList.add('active-filter');
       }
       doSearch();
     }
@@ -386,7 +393,8 @@
       try {
         let url = `${API_BASE}/products?status=active`;
         if (search) url += `&search=${encodeURIComponent(search)}`;
-        if (priceRange) url += `&price_range=${priceRange}`;
+        if (priceRange === 'bundle') url += `&type=bundle`;
+        else if (priceRange) url += `&price_range=${priceRange}`;
 
         const res = await fetch(url, { cache: 'no-store' });
         const result = await res.json();
