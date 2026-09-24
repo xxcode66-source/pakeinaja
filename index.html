@@ -157,7 +157,7 @@
 
   <!-- MODAL DETAIL PRODUK -->
   <div id="productModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative max-h-[92dvh] overflow-y-auto">
       
       <!-- Close Button -->
       <button onclick="closeModal()" class="absolute top-3 right-3 bg-white/80 hover:bg-white text-gray-700 w-8 h-8 rounded-full flex items-center justify-center z-10 shadow transition">
@@ -233,7 +233,7 @@
   </div>
 
   <!-- LIGHTBOX FULLSCREEN -->
-  <div id="lightbox" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-center justify-center" onclick="closeLightbox(event)">
+  <div id="lightbox" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-center justify-center">
     <!-- Close -->
     <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/80 hover:text-white w-10 h-10 rounded-full bg-white/10 flex items-center justify-center z-10 transition">
       <i class="fa-solid fa-xmark text-xl"></i>
@@ -249,8 +249,8 @@
       <i class="fa-solid fa-chevron-right"></i>
     </button>
     <!-- Image Container with zoom -->
-    <div id="lbContainer" class="w-full h-full flex items-center justify-center overflow-auto" onwheel="lbZoom(event)" ontouchmove="lbPinch(event)">
-      <img id="lbImg" src="" class="max-w-none transition-transform duration-100" style="transform: scale(1)" draggable="false">
+    <div id="lbContainer" class="w-full h-full flex items-center justify-center overflow-auto p-4" onwheel="lbZoom(event)" ontouchmove="lbPinch(event)" onclick="lbBackdrop(event)">
+      <img id="lbImg" src="" class="max-w-full max-h-full w-auto h-auto object-contain select-none transition-transform duration-100" style="transform: scale(1)" draggable="false">
     </div>
     <!-- Zoom controls -->
     <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
@@ -287,6 +287,27 @@
     function renderProducts(products) {
       const grid = document.getElementById('productGrid');
       grid.innerHTML = products.map((p, idx) => {
+        // --- Kartu BUNDLE: mosaic isi + badge 🎁 ---
+        if (p.type === 'bundle') {
+          const imgs = (p.bundleItems || []).map(it => it.image).filter(Boolean);
+          const count = (p.bundleItems || []).length;
+          const mosaic = imgs.slice(0, 4);
+          const tiles = mosaic.length
+            ? `<div class="grid grid-cols-2 gap-0.5 w-full h-full">${mosaic.map(src => `<div class="bg-pinkSoft/30 overflow-hidden"><img src="${src}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300"></div>`).join('')}</div>`
+            : `<div class="w-full h-full bg-pinkSoft/30 flex items-center justify-center text-pinkDark text-3xl"><i class="fa-solid fa-gift"></i></div>`;
+          return `
+          <div onclick='openModalByIndex(${idx})' class="bg-white rounded-3xl p-3 border-2 border-amber-200 shadow-sm hover:shadow-md transition cursor-pointer group relative">
+            <span class="absolute top-4 left-4 z-10 bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow"><i class="fa-solid fa-gift"></i> BUNDLE</span>
+            <div class="relative overflow-hidden rounded-2xl mb-3 bg-pinkSoft/30 aspect-square">${tiles}
+              <span class="absolute bottom-2 right-2 bg-black/55 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${count} item</span>
+            </div>
+            <h4 class="font-semibold text-sm text-gray-800 line-clamp-1">${p.name}</h4>
+            <div class="flex items-center justify-between mt-2">
+              <span class="font-bold text-pinkDark text-sm">${formatPrice(p.price)}${p.priceOld > p.price ? `<span class="text-[10px] font-medium text-gray-400 line-through ml-1">${formatPrice(p.priceOld)}</span>` : ''}</span>
+              <span class="text-[11px] text-amber-500 font-medium"><i class="fa-solid fa-gift"></i> ${Math.max(0, count - 1)}+1</span>
+            </div>
+          </div>`;
+        }
         const thumbSrc = (p.images && p.images.length > 0) ? p.images[0] : '';
         const hasVideo = p.video ? 'true' : 'false';
         const priceTag = p.price >= 5000 && p.price <= 25000
@@ -399,31 +420,42 @@
       modalPrice.innerHTML = formatPrice(p.price) + (p.priceOld > p.price ? ` <span class="text-sm font-medium text-gray-400 line-through align-middle">${formatPrice(p.priceOld)}</span>` : '');
       modalDesc.innerText = p.description;
 
-      // Build media list (images + video)
+      // Build media area — beda untuk bundle (grid isi) vs satuan (gallery)
       currentMediaList = [];
-      const images = p.images || [];
-      images.forEach(img => currentMediaList.push({ type: 'image', src: img }));
-      if (p.video) currentMediaList.push({ type: 'video', src: p.video });
       currentMediaIndex = 0;
-
-      // Main media: show first image or video
-      if (images.length > 0) {
-        modalMediaBox.innerHTML = `<img src="${images[0]}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox()"><div class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition cursor-zoom-in" onclick="openLightbox()"><i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 hover:opacity-100 transition"></i></div>`;
-      } else if (p.video) {
-        modalMediaBox.innerHTML = `<video src="${p.video}" class="w-full h-full object-cover" controls></video>`;
-      }
-
-      // Thumbnails
-      let thumbsHTML = '';
-      currentMediaList.forEach((media, i) => {
-        if (media.type === 'image') {
-          thumbsHTML += `<img src="${media.src}" onclick="switchMedia(${i})" class="w-14 h-14 rounded-lg object-cover cursor-pointer border-2 ${i === 0 ? 'border-pinkCute' : 'border-transparent'} hover:border-pinkCute transition flex-shrink-0">`;
-        } else {
-          thumbsHTML += `<div onclick="switchMedia(${i})" class="w-14 h-14 rounded-lg bg-gray-800 cursor-pointer border-2 border-transparent hover:border-pinkCute transition flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-play text-white text-xs"></i></div>`;
+      if (p.type === 'bundle') {
+        const items = p.bundleItems || [];
+        currentMediaList = items.map(it => ({ type: 'image', src: it.image }));
+        modalMediaBox.className = 'w-full relative bg-pinkSoft/10';
+        modalMediaBox.innerHTML = items.length ? `<div class="p-3 grid grid-cols-3 gap-2">` + items.map((it, i) => `
+          <div onclick="openLightboxAt(${i})" class="relative rounded-xl overflow-hidden aspect-square cursor-zoom-in border ${it.bonus ? 'border-amber-400 ring-2 ring-amber-200' : 'border-pinkSoft'}">
+            <img src="${it.image}" class="w-full h-full object-cover">
+            <span class="absolute bottom-0 inset-x-0 bg-black/55 text-white text-[9px] px-1 py-0.5 truncate">${it.name}</span>
+            ${it.bonus ? '<span class="absolute top-1 left-1 bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">🎁 BONUS</span>' : ''}
+          </div>`).join('') + `</div>`
+          : '<p class="p-4 text-sm text-gray-400">Bundle kosong.</p>';
+        modalThumbs.style.display = 'none';
+      } else {
+        const images = p.images || [];
+        images.forEach(img => currentMediaList.push({ type: 'image', src: img }));
+        if (p.video) currentMediaList.push({ type: 'video', src: p.video });
+        modalMediaBox.className = 'h-72 w-full relative';
+        if (images.length > 0) {
+          modalMediaBox.innerHTML = `<img src="${images[0]}" class="w-full h-full object-cover cursor-zoom-in" onclick="openLightbox()"><div class="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition cursor-zoom-in" onclick="openLightbox()"><i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 hover:opacity-100 transition"></i></div>`;
+        } else if (p.video) {
+          modalMediaBox.innerHTML = `<video src="${p.video}" class="w-full h-full object-cover" controls></video>`;
         }
-      });
-      modalThumbs.innerHTML = thumbsHTML;
-      modalThumbs.style.display = currentMediaList.length > 1 ? 'flex' : 'none';
+        let thumbsHTML = '';
+        currentMediaList.forEach((media, i) => {
+          if (media.type === 'image') {
+            thumbsHTML += `<img src="${media.src}" onclick="switchMedia(${i})" class="w-14 h-14 rounded-lg object-cover cursor-pointer border-2 ${i === 0 ? 'border-pinkCute' : 'border-transparent'} hover:border-pinkCute transition flex-shrink-0">`;
+          } else {
+            thumbsHTML += `<div onclick="switchMedia(${i})" class="w-14 h-14 rounded-lg bg-gray-800 cursor-pointer border-2 border-transparent hover:border-pinkCute transition flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-play text-white text-xs"></i></div>`;
+          }
+        });
+        modalThumbs.innerHTML = thumbsHTML;
+        modalThumbs.style.display = currentMediaList.length > 1 ? 'flex' : 'none';
+      }
 
       // WA buttons
       const productName = encodeURIComponent(p.name);
@@ -438,6 +470,7 @@
       };
 
       modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
     }
 
     // Switch media in modal
@@ -463,18 +496,24 @@
       const lb = document.getElementById('lightbox');
       const lbImg = document.getElementById('lbImg');
       lbImg.src = media.src;
-      lbScale = 1;
-      lbImg.style.transform = 'scale(1)';
-      document.getElementById('lbZoomLevel').innerText = '100%';
+      lbResetZoom();
       updateLbCounter();
       lb.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
 
-    function closeLightbox(e) {
-      if (e && e.target !== e.currentTarget && !e.target.closest('button.fa-xmark')) return;
+    // Buka lightbox pada index tertentu (dipakai grid isi bundle)
+    function openLightboxAt(i) { currentMediaIndex = i; openLightbox(); }
+
+    function closeLightbox() {
       document.getElementById('lightbox').classList.add('hidden');
-      document.body.style.overflow = '';
+      // tetap kunci scroll kalau modal produk masih terbuka
+      document.body.style.overflow = document.getElementById('productModal').classList.contains('hidden') ? '' : 'hidden';
+    }
+
+    // tutup saat area gelap (bukan gambarnya) di-klik
+    function lbBackdrop(e) {
+      if (e.target === e.currentTarget) closeLightbox();
     }
 
     function updateLbCounter() {
@@ -529,6 +568,8 @@
       lbScale = 1;
       document.getElementById('lbImg').style.transform = 'scale(1)';
       document.getElementById('lbZoomLevel').innerText = '100%';
+      const c = document.getElementById('lbContainer');
+      if (c) { c.scrollLeft = 0; c.scrollTop = 0; }
     }
 
     // Pinch to zoom (mobile)
@@ -562,6 +603,7 @@
     // Fungsi Tutup Modal
     function closeModal() {
       modal.classList.add('hidden');
+      document.body.style.overflow = '';
       currentProduct = null;
     }
 

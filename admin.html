@@ -83,6 +83,21 @@
         <h2 id="formTitle" class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-plus text-pinkDark mr-1"></i> Tambah Barang</h2>
         <input type="hidden" id="editId">
         <div class="grid md:grid-cols-2 gap-3">
+          <div class="md:col-span-2 flex items-center gap-2">
+            <span class="text-xs text-gray-500">Tipe:</span>
+            <div class="inline-flex rounded-xl border border-pinkSoft overflow-hidden text-sm">
+              <button type="button" id="typeSingle" onclick="setType('single')" class="px-4 py-1.5 font-semibold bg-pinkDark text-white">Satuan</button>
+              <button type="button" id="typeBundle" onclick="setType('bundle')" class="px-4 py-1.5 font-semibold bg-white text-gray-500">Bundle 🎁</button>
+            </div>
+          </div>
+          <div id="bundleEditor" class="md:col-span-2 hidden">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs text-gray-500">Isi Bundle (maks 20 · item terakhir = 🎁 bonus)</label>
+              <button type="button" onclick="addBundleItem()" class="text-xs bg-pinkSoft text-pinkDark font-semibold px-3 py-1 rounded-lg hover:bg-pinkCute hover:text-white transition"><i class="fa-solid fa-plus"></i> Tambah Item</button>
+            </div>
+            <div id="bundleList" class="space-y-2"></div>
+            <p id="bundleUploadStatus" class="text-xs text-gray-400 mt-1 hidden"></p>
+          </div>
           <div>
             <label class="text-xs text-gray-500">Nama barang *</label>
             <input id="fName" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Misal: Cardigan Rajut Peach">
@@ -116,7 +131,7 @@
             <label class="text-xs text-gray-500">Deskripsi</label>
             <textarea id="fDesc" rows="2" class="w-full border border-pinkSoft rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute" placeholder="Deskripsi singkat barang..."></textarea>
           </div>
-          <div class="md:col-span-2">
+          <div class="md:col-span-2" id="singleImageBlock">
             <label class="text-xs text-gray-500">Foto-foto (maks 8, @8MB)</label>
             <input id="fImages" type="file" accept="image/*" multiple class="w-full text-sm file:bg-pinkSoft file:text-pinkDark file:border-0 file:rounded-xl file:px-4 file:py-2 file:mr-3 file:cursor-pointer">
             <div id="imgPreview" class="flex flex-wrap gap-2 mt-3"></div>
@@ -181,6 +196,8 @@
     let allProducts = [];
     let currentStats = { soldCount: 0, revenue: 0, soldHistory: [] };
     let pendingImages = []; // { url, name }
+    let bundleItems = [];   // { name, image } — khusus tipe bundle
+    let currentType = 'single';
     const PAGE_SIZE = 10;
     let prodPage = 1;
     let histPage = 1;
@@ -284,7 +301,7 @@
             <img src="${(p.images && p.images[0]) || ''}" onerror="this.style.visibility='hidden'" class="w-14 h-14 rounded-xl object-cover bg-pinkSoft/30 flex-shrink-0">
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-sm text-gray-800 truncate">${p.name}</p>
-              <p class="text-xs text-gray-400">${p.badge ? '<span class="text-pinkDark font-medium">' + p.badge + '</span>' : ''}</p>
+              <p class="text-xs text-gray-400">${p.type === 'bundle' ? '<span class="text-amber-600 font-bold">🎁 BUNDLE · ' + (p.bundleItems ? p.bundleItems.length : 0) + ' item</span> ' : ''}${p.badge ? '<span class="text-pinkDark font-medium">' + p.badge + '</span>' : ''}</p>
               <p class="text-sm font-bold text-pinkDark">${rupiah(p.price)}${p.priceOld > p.price ? ' <span class="text-[10px] font-medium text-gray-400 line-through">' + rupiah(p.priceOld) + '</span>' : ''}</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
@@ -420,6 +437,63 @@
       renderImgPreviews();
     }
 
+    // ---------- Bundle ----------
+    function setType(t) {
+      currentType = t;
+      const isBundle = t === 'bundle';
+      $('typeSingle').className = 'px-4 py-1.5 font-semibold ' + (isBundle ? 'bg-white text-gray-500' : 'bg-pinkDark text-white');
+      $('typeBundle').className = 'px-4 py-1.5 font-semibold ' + (isBundle ? 'bg-pinkDark text-white' : 'bg-white text-gray-500');
+      $('bundleEditor').classList.toggle('hidden', !isBundle);
+      $('singleImageBlock').classList.toggle('hidden', isBundle);
+    }
+    function addBundleItem() {
+      if (bundleItems.length >= 20) return toast('Maksimal 20 item', false);
+      bundleItems.push({ name: '', image: '' });
+      renderBundleItems();
+    }
+    function removeBundleItem(i) { bundleItems.splice(i, 1); renderBundleItems(); }
+    function setBundleName(i, v) { if (bundleItems[i]) bundleItems[i].name = v; }
+    async function uploadBundleImage(i, input) {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file || !bundleItems[i]) return;
+      const status = $('bundleUploadStatus');
+      status.classList.remove('hidden'); status.textContent = 'Mengupload foto item...';
+      uploadingCount++; refreshSaveBtn();
+      const payload = await compressImage(file);
+      try {
+        const res = await fetch(`${API}/admin/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token, 'x-filename': payload.name, 'Content-Type': payload.type || 'application/octet-stream' },
+          body: payload,
+        });
+        const result = await res.json();
+        if (result.success) { bundleItems[i].image = result.url; renderBundleItems(); }
+        else toast(result.error || 'Gagal upload', false);
+      } catch (e) {
+        toast('Gagal upload foto item', false);
+      } finally {
+        uploadingCount--; refreshSaveBtn(); status.classList.add('hidden');
+      }
+    }
+    function renderBundleItems() {
+      const last = bundleItems.length - 1;
+      $('bundleList').innerHTML = bundleItems.length === 0
+        ? '<p class="text-xs text-gray-400">Belum ada item. Klik "Tambah Item" untuk mulai.</p>'
+        : bundleItems.map((it, i) => `
+          <div class="flex items-center gap-2 border border-pinkSoft/60 rounded-xl p-2 bg-white">
+            <span class="w-5 text-center text-xs font-bold text-gray-400 flex-shrink-0">${i + 1}</span>
+            <label class="w-12 h-12 rounded-lg bg-pinkSoft/30 border border-pinkSoft flex items-center justify-center cursor-pointer flex-shrink-0 overflow-hidden">
+              ${it.image ? `<img src="${it.image}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-camera text-pinkDark"></i>'}
+              <input type="file" accept="image/*" class="hidden" onchange="uploadBundleImage(${i}, this)">
+            </label>
+            <input value="${(it.name || '').replace(/"/g, '&quot;')}" oninput="setBundleName(${i}, this.value)" placeholder="Nama item ${i + 1}" class="flex-1 min-w-0 border border-pinkSoft rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-pinkCute">
+            ${i === last && bundleItems.length >= 2 ? '<span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full flex-shrink-0">🎁 BONUS</span>' : ''}
+            <button type="button" onclick="removeBundleItem(${i})" class="w-7 h-7 text-red-400 hover:text-red-600 flex-shrink-0"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `).join('');
+    }
+
     // ---------- CRUD ----------
     async function saveProduct() {
       if (uploadingCount > 0) return toast('Tunggu sebentar, foto masih diupload...', false);
@@ -429,13 +503,18 @@
       if (!price) return toast('Harga wajib diisi', false);
 
       const editId = $('editId').value;
+      if (currentType === 'bundle' && bundleItems.filter(it => it.image).length < 2) {
+        return toast('Bundle butuh minimal 2 item (masing-masing ada foto)', false);
+      }
       const payload = {
         name, price,
         priceOld: Number($('fPriceOld').value) || null,
         description: $('fDesc').value.trim(),
         badge: $('fBadge').value,
-        video: $('fVideo').value.trim() || null,
+        video: currentType === 'bundle' ? null : ($('fVideo').value.trim() || null),
+        type: currentType,
         images: pendingImages.map(i => i.url),
+        bundleItems: currentType === 'bundle' ? bundleItems.filter(it => it.image) : [],
       };
       // kalau edit, bersih-bersih field lama yang sudah tidak dipakai (misal material)
       if (editId) {
@@ -470,6 +549,10 @@
       $('fVideo').value = p.video || '';
       pendingImages = (p.images || []).map(u => ({ url: u, name: u.split('/').pop() }));
       renderImgPreviews();
+      currentType = p.type === 'bundle' ? 'bundle' : 'single';
+      setType(currentType);
+      bundleItems = (p.bundleItems || []).map(it => ({ name: it.name || '', image: it.image || '' }));
+      renderBundleItems();
       $('formTitle').innerHTML = '<i class="fa-solid fa-pen text-pinkDark mr-1"></i> Edit Barang';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -481,6 +564,10 @@
       $('fImages').value = '';
       pendingImages = [];
       renderImgPreviews();
+      currentType = 'single';
+      setType('single');
+      bundleItems = [];
+      renderBundleItems();
       $('formTitle').innerHTML = '<i class="fa-solid fa-plus text-pinkDark mr-1"></i> Tambah Barang';
     }
 
